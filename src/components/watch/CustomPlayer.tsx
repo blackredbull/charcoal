@@ -32,8 +32,9 @@ const formatQuality = (quality: string) => {
   if (!quality) return 'Auto';
   // Remove common "bullshit" or messy tags
   return quality
-    .replace(/\s*\(.*?\)\s*/g, '') // remove (...)
-    .replace(/unknown/gi, '')
+    .replace(/\s*[\[\(\{].*?[\]\)\}]\s*/g, ' ') // remove (...), [...], {...}
+    .replace(/\b(unknown|webrip|web-dl|bluray|x264|x265|hevc|10bit|dual-audio|multi|h264|h265)\b/gi, '')
+    .replace(/\s+/g, ' ')
     .trim() || 'Auto';
 };
 
@@ -41,8 +42,32 @@ const formatProvider = (name: string) => {
   if (!name) return 'Premium';
   // Clean provider names
   return name
-    .replace(/server/gi, '')
+    .replace(/\s*[\[\(\{].*?[\]\)\}]\s*/g, ' ')
+    .replace(/\b(server|provider|premium|unknown)\b/gi, '')
+    .replace(/\s+/g, ' ')
     .trim() || 'Premium';
+};
+
+const formatSubtitleLabel = (label: string) => {
+  if (!label) return 'English';
+  // Clean subtitle labels from messy metadata
+  return label
+    .replace(/\s*[\[\(\{].*?[\]\)\}]\s*/g, ' ')
+    .replace(/\b(forced|sdh|cc|unknown)\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim() || label;
+};
+
+const getQualityValue = (q: string) => {
+  const lower = q.toLowerCase();
+  if (lower.includes('2160') || lower.includes('4k')) return 2160;
+  if (lower.includes('1440') || lower.includes('2k')) return 1440;
+  if (lower.includes('1080')) return 1080;
+  if (lower.includes('720')) return 720;
+  if (lower.includes('480')) return 480;
+  if (lower.includes('360')) return 360;
+  const num = parseInt(q);
+  return isNaN(num) ? 0 : num;
 };
 
 const CustomPlayer: React.FC<CustomPlayerProps> = ({
@@ -74,41 +99,49 @@ const CustomPlayer: React.FC<CustomPlayerProps> = ({
       cleanQuality: formatQuality(s.quality),
       cleanProvider: formatProvider(s.provider.name)
     })).sort((a, b) => {
-      // Sort by quality (1080p > 720p > etc)
-      const qA = parseInt(a.cleanQuality) || 0;
-      const qB = parseInt(b.cleanQuality) || 0;
+      // Sort by quality (4K > 1080p > 720p > etc)
+      const qA = getQualityValue(a.quality);
+      const qB = getQualityValue(b.quality);
       return qB - qA;
     });
+  }, [jellyData]);
+
+  // Clean and memoize subtitles
+  const processedSubtitles = useMemo(() => {
+    if (!jellyData?.subtitles) return [];
+    return jellyData.subtitles.map(sub => ({
+      ...sub,
+      cleanLabel: formatSubtitleLabel(sub.label)
+    }));
   }, [jellyData]);
 
   // Load last selected quality or default to 1080p
   useEffect(() => {
     if (processedSources.length) {
       const cachedQuality = localStorage.getItem('player-quality');
-      let source = processedSources.find(s => s.quality === cachedQuality || s.cleanQuality === cachedQuality);
-      
+      let source = processedSources.find(s => s.cleanQuality === cachedQuality);
+
       if (!source) {
         // Default to 1080p if available
         source = processedSources.find(s => s.cleanQuality.includes('1080')) || processedSources[0];
       }
-      
+
       setSelectedSource(source);
     }
   }, [processedSources]);
 
-  const onProviderChange = (provider: MediaProviderAdapter | null) => {
-    if (isHLSProvider(provider)) {
-      provider.config = {
-        capLevelToPlayerSize: true,
-        autoStartLoad: true,
-      };
-    }
-  };
-
   const handleQualityChange = (source: any) => {
+    const currentTime = player.current?.currentTime;
+
     setSelectedSource(source);
     localStorage.setItem('player-quality', source.cleanQuality);
     setShowQualityMenu(false);
+
+    if (currentTime) {
+      setTimeout(() => {
+        if (player.current) player.current.currentTime = currentTime;
+      }, 100);
+    }
   };
 
   if (isLoading) {
@@ -166,13 +199,13 @@ const CustomPlayer: React.FC<CustomPlayerProps> = ({
           crossOrigin
         >
           <MediaProvider />
-          
-          {jellyData?.subtitles?.map((sub) => (
+
+          {processedSubtitles.map((sub) => (
             <Track
               key={sub.url}
               src={sub.url}
               kind="subtitles"
-              label={sub.label}
+              label={sub.cleanLabel}
               lang="en"
               type="vtt"
             />
