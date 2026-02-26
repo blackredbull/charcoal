@@ -12,6 +12,13 @@ const vidLinkParams = '?primaryColor=3b82f6&poster=true&autoplay=false';
 
 export const SOURCES: Source[] = [
   {
+    id: 'jelly',
+    name: 'Jelly (Premium)',
+    movieUrl: '',
+    tvUrl: '',
+    rank: 1000,
+  },
+  {
     id: 'videasy.net',
     name: 'VIDEASY',
     movieUrl: 'https://player.videasy.net/movie/{id}?color=DC2626&nextEpisode=true&episodeSelector=true&autoplay=true',
