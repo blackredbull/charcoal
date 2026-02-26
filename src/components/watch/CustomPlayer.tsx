@@ -75,6 +75,18 @@ const CustomPlayer: React.FC<CustomPlayerProps> = ({
         hls.attachMedia(video);
         hlsRef.current = hls;
 
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          if (selectedAudio) {
+            const tracks = hls.audioTracks;
+            const index = tracks.findIndex(t =>
+              t.name === selectedAudio.label || t.lang === selectedAudio.language
+            );
+            if (index !== -1) {
+              hls.audioTrack = index;
+            }
+          }
+        });
+
         hls.on(Hls.Events.ERROR, (_, data) => {
           if (data.fatal) {
             switch (data.type) {
@@ -124,9 +136,16 @@ const CustomPlayer: React.FC<CustomPlayerProps> = ({
   const handleAudioChange = (audio: JellyAudioTrack) => {
     setSelectedAudio(audio);
     setActiveMenu('none');
-    // Note: Implementing multiple audio tracks in HLS.js or native video might require more logic
-    // depending on if they are separate streams or embedded. 
-    // For now we just update state.
+
+    if (hlsRef.current) {
+      const tracks = hlsRef.current.audioTracks;
+      const index = tracks.findIndex(t =>
+        t.name === audio.label || t.lang === audio.language
+      );
+      if (index !== -1) {
+        hlsRef.current.audioTrack = index;
+      }
+    }
   };
 
   useEffect(() => {
@@ -303,10 +322,15 @@ const CustomPlayer: React.FC<CustomPlayerProps> = ({
                 onClick={() => handleQualityChange(source)}
                 className={cn(
                   "w-full px-4 py-2 text-left text-sm transition-colors hover:bg-white/10",
-                  selectedSource?.quality === source.quality ? "text-red-500 font-bold" : "text-white"
+                  selectedSource?.url === source.url ? "text-red-500 font-bold" : "text-white"
                 )}
               >
-                {source.quality}
+                <div className="flex flex-col">
+                  <span>{source.quality}</span>
+                  <span className="text-[10px] text-white/40 uppercase tracking-tight">
+                    {source.provider.name}
+                  </span>
+                </div>
               </button>
             ))}
 
