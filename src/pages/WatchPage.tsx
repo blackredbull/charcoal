@@ -65,20 +65,20 @@ const WatchPage: React.FC = () => {
     onUpdateWatchlist: updateWatchlistStatus,
   });
 
-  const videoUrl = mediaType === 'movie'
-    ? getMovieUrl(selectedSource, Number(id))
-    : getTvUrl(selectedSource, Number(id), Number(season), Number(episode));
-
-  // If source is Jelly, compute fallback from first available embed source
+  // If source is Jelly, use Jelly player; otherwise use iframe embed
   const isJelly = selectedSource === 'jelly';
-  const fallbackSource = isJelly ? SOURCES[1].id : selectedSource;
-  const embedUrl = mediaType === 'movie'
-    ? getMovieUrl(fallbackSource, Number(id))
-    : getTvUrl(fallbackSource, Number(id), Number(season), Number(episode));
 
-  if (isJelly && !embedUrl && !videoUrl) {
-    return <div>Invalid media type or missing parameters</div>;
-  }
+  // For non-Jelly sources, get the embed URL
+  const embedUrl = !isJelly ? (
+    mediaType === 'movie'
+      ? getMovieUrl(selectedSource, Number(id))
+      : getTvUrl(selectedSource, Number(id), Number(season), Number(episode))
+  ) : (
+    // Fallback to VIDEASY for Jelly if it fails
+    mediaType === 'movie'
+      ? getMovieUrl('videasy.net', Number(id))
+      : getTvUrl('videasy.net', Number(id), Number(season), Number(episode))
+  );
 
   const backUrl = mediaType === 'movie' ? `/movie/${id}` : `/tv/${id}`;
 
@@ -122,7 +122,7 @@ const WatchPage: React.FC = () => {
         <CustomPlayer
           tmdbId={id!}
           type={mediaType as 'movie' | 'tv'}
-          embedUrl={isJelly ? embedUrl : videoUrl}
+          embedUrl={embedUrl}
           season={Number(season)}
           episode={Number(episode)}
           useJelly={isJelly}

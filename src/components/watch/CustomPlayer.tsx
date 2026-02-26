@@ -191,7 +191,6 @@ const CustomPlayer: React.FC<CustomPlayerProps> = ({
           ref={player}
           title={type === 'movie' ? 'Movie' : `S${season} E${episode}`}
           src={selectedSource.url}
-          onProviderChange={onProviderChange}
           onError={() => setLocalError('Playback failed. Please try another source.')}
           className="w-full h-full"
           playsInline
