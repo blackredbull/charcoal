@@ -154,35 +154,6 @@ const WatchPage: React.FC = () => {
             videoUrl={videoUrl}
             jellyData={jellyData}
             useCustomPlayer={useCustomPlayer}
-<<<<<<< Updated upstream
-          />
-        )}
-      </div>
-      <BottomBar
-        onBack={() => navigate(backUrl)}
-        backUrl={backUrl}
-        onPrevious={handlePrevious}
-        onNext={handleNext}
-        onSourceChange={setSelectedSource}
-        selectedSource={selectedSource}
-        showTitle={mediaType === 'movie' ? details?.title : details?.name}
-        episodeTitle={currentEpisodeData?.name}
-        seasons={seasons}
-        currentSeason={season}
-        currentEpisode={episode}
-        selectedSeason={selectedSeason}
-        onSeasonChange={setSelectedSeason}
-        onEpisodeSelect={handleEpisodeSelect}
-        isFirstEpisode={isFirstEpisode}
-        isLastEpisode={isLastEpisode}
-        tvId={Number(id)}
-        isMovie={mediaType === 'movie'}
-        isLandscape={isLandscape}
-        useCustomPlayer={useCustomPlayer}
-        onTogglePlayer={() => setUseCustomPlayer(!useCustomPlayer)}
-        hasCustomPlayer={!!jellyData}
-      />
-=======
             isMovie={mediaType === 'movie'}
             seasonNumber={Number(season)}
             episodeNumber={Number(episode)}
@@ -224,7 +195,6 @@ const WatchPage: React.FC = () => {
           hasCustomPlayer={!!jellyData}
         />
       )}
->>>>>>> Stashed changes
     </div>
   );
 };

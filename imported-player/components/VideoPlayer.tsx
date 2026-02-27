@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-import React, { useEffect, useRef, useState } from 'react';
-=======
 import React, { useEffect, useRef, useState, useCallback } from 'react';
->>>>>>> Stashed changes
 import HlsLib from 'hls.js';
 import { BackendApiResponse, BackendSource, BackendSubtitle } from '../types/api';
 
@@ -27,11 +23,6 @@ interface VideoPlayerProps {
 
 const formatQuality = (quality: string): string => {
   if (!quality) return 'Auto';
-<<<<<<< Updated upstream
-  const cleanQuality = quality.toLowerCase().replace(/[^0-9pk]/g, '');
-  if (cleanQuality.includes('2160') || cleanQuality.includes('4k')) return '4K';
-  if (cleanQuality.includes('1440') || cleanQuality.includes('2k')) return '2K';
-=======
   const lower = quality.toLowerCase();
 
   // Handle "unknown" or empty
@@ -45,20 +36,15 @@ const formatQuality = (quality: string): string => {
 
   if (cleanQuality.includes('2160') || lower.includes('4k')) return '4K';
   if (cleanQuality.includes('1440') || lower.includes('2k')) return '2K';
->>>>>>> Stashed changes
   if (cleanQuality.includes('1080')) return '1080p';
   if (cleanQuality.includes('720')) return '720p';
   if (cleanQuality.includes('480')) return '480p';
   if (cleanQuality.includes('360')) return '360p';
-<<<<<<< Updated upstream
-  return quality;
-=======
 
   // If we have a number, append 'p'
   if (cleanQuality) return `${cleanQuality}p`;
 
   return 'SD';
->>>>>>> Stashed changes
 };
 
 // million-ignore
@@ -76,16 +62,6 @@ const SourceList = ({
       <button
         key={i}
         onClick={() => onSelect(src)}
-<<<<<<< Updated upstream
-        className={`w-full text-left px-3.5 py-3 rounded-xl hover:bg-white/5 text-sm flex justify-between items-center transition-all border border-transparent ${currentSource === src ? 'bg-accent/10 border-accent/30 text-accent' : 'text-gray-300 hover:border-white/10'}`}
-      >
-        <div className="flex flex-col gap-0.5">
-          <span className="font-bold tracking-tight">{formatQuality(src.quality)}</span>
-          <span className="text-[10px] opacity-40 uppercase font-black tracking-widest">{src.type.toUpperCase()}</span>
-        </div>
-        <div className="flex flex-col items-end gap-1">
-          <span className="text-[9px] bg-white/5 px-2 py-1 rounded-md text-white/50 uppercase font-black tracking-tighter border border-white/5">{src.provider.name}</span>
-=======
         className={`w-full text-left px-3.5 py-2.5 rounded-lg hover:bg-white/5 text-sm flex justify-between items-center transition-all border ${currentSource === src ? 'bg-accent/10 border-accent/50 text-accent' : 'border-white/5 text-gray-300 hover:border-white/10'}`}
       >
         <div className="flex flex-col gap-0.5">
@@ -94,7 +70,6 @@ const SourceList = ({
         </div>
         <div className="flex flex-col items-end gap-1">
           <span className="text-[9px] bg-white/5 px-2 py-0.5 rounded text-white/50 uppercase font-medium tracking-tight border border-white/5">{src.provider.name}</span>
->>>>>>> Stashed changes
         </div>
       </button>
     ))}
@@ -114,11 +89,7 @@ const SubtitleList = ({
   <div className="space-y-1.5 max-h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
     <button
       onClick={() => onSelect(null)}
-<<<<<<< Updated upstream
-      className={`w-full text-left px-3.5 py-3 rounded-xl hover:bg-white/5 text-sm transition-all border border-transparent ${currentSubtitle === null ? 'bg-accent/10 border-accent/30 text-accent' : 'text-gray-300 hover:border-white/10'}`}
-=======
       className={`w-full text-left px-3.5 py-2.5 rounded-lg hover:bg-white/5 text-sm transition-all border ${currentSubtitle === null ? 'bg-accent/10 border-accent/50 text-accent font-semibold' : 'border-white/5 text-gray-300 hover:border-white/10'}`}
->>>>>>> Stashed changes
     >
       None (Off)
     </button>
@@ -126,11 +97,7 @@ const SubtitleList = ({
       <button
         key={i}
         onClick={() => onSelect(sub)}
-<<<<<<< Updated upstream
-        className={`w-full text-left px-3.5 py-3 rounded-xl hover:bg-white/5 text-sm transition-all border border-transparent ${currentSubtitle === sub ? 'bg-accent/10 border-accent/30 text-accent' : 'text-gray-300 hover:border-white/10'}`}
-=======
         className={`w-full text-left px-3.5 py-2.5 rounded-lg hover:bg-white/5 text-sm transition-all border ${currentSubtitle === sub ? 'bg-accent/10 border-accent/50 text-accent font-semibold' : 'border-white/5 text-gray-300 hover:border-white/10'}`}
->>>>>>> Stashed changes
       >
         <span>{sub.label}</span>
       </button>
@@ -354,8 +321,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
           <div className="w-12 h-12 border-4 border-accent/30 border-t-accent rounded-full animate-spin"></div>
-<<<<<<< Updated upstream
-=======
         </div>
       )}
 
@@ -492,7 +457,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </div>
             </div>
           </div>
->>>>>>> Stashed changes
         </div>
       )}
 
@@ -502,30 +466,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       >
 
         {/* Progress Bar */}
-<<<<<<< Updated upstream
-        <div className="w-full mb-6 relative group/progress">
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="0.1"
-            value={progress || 0}
-            onChange={handleSeek}
-            className="w-full h-1.5 bg-white/20 rounded-full appearance-none cursor-pointer accent-accent group-hover/progress:h-2 transition-all"
-          />
-          <div
-            className="absolute top-0 left-0 h-1.5 bg-accent rounded-full pointer-events-none group-hover/progress:h-2 transition-all"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-
-        <div className="flex items-center justify-between text-white">
-          <div className="flex items-center gap-4">
-            <button onClick={(e) => skip(-10, e)} className="hover:text-accent transition-colors p-1">
-              <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05 1-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
-            </button>
-            <button onClick={togglePlay} className="hover:text-accent transition-all active:scale-90">
-=======
         <div className="w-full mb-2 relative group/progress pointer-events-auto" onClick={(e) => e.stopPropagation()}>
           <div className="relative h-2 bg-white/10 rounded-full overflow-hidden">
             <div
@@ -567,24 +507,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               className="hover:bg-accent/20 text-accent hover:text-accent transition-all active:scale-95 p-2 rounded-lg"
               title={isPlaying ? "Pause" : "Play"}
             >
->>>>>>> Stashed changes
               {isPlaying ? (
                 <svg className="w-6 h-6 md:w-8 md:h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
               ) : (
                 <svg className="w-6 h-6 md:w-8 md:h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
               )}
             </button>
-<<<<<<< Updated upstream
-            <button onClick={(e) => skip(10, e)} className="hover:text-accent transition-colors p-1">
-              <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M11.5 8c2.65 0 5.05 1 6.9 2.6L22 7v9h-9l3.62-3.62c-1.39-1.16-3.16-1.88-5.12-1.88-3.54 0-6.55 2.31-7.6 5.5l-2.37-.78C2.92 11.03 6.85 8 11.5 8z"/></svg>
-=======
             <button
               onClick={(e) => skip(10, e)}
               className="hover:bg-white/10 hover:text-accent transition-all p-2 rounded-lg active:scale-95"
               title="Forward 10s"
             >
               <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.5 8c2.65 0 5.05 1 6.9 2.6L22 7v9h-9l3.62-3.62c-1.39-1.16-3.16-1.88-5.12-1.88-3.54 0-6.55 2.31-7.6 5.5l-2.37-.78C2.92 11.03 6.85 8 11.5 8z"/></svg>
->>>>>>> Stashed changes
             </button>
 
             <div className="flex items-center gap-2 group/volume md:ml-2">
@@ -594,12 +528,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   setVolume(volume === 0 ? 1 : 0);
                   if (videoRef.current) videoRef.current.volume = volume === 0 ? 1 : 0;
                 }}
-<<<<<<< Updated upstream
-                className="hover:text-accent transition-colors"
-=======
                 className="hover:bg-white/10 hover:text-accent transition-all p-2 rounded-lg active:scale-95"
                 title="Mute"
->>>>>>> Stashed changes
               >
                 {volume === 0 ? (
                   <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
@@ -614,23 +544,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 step="0.05"
                 value={volume}
                 onChange={handleVolumeChange}
-<<<<<<< Updated upstream
-                className="w-0 group-hover/volume:w-24 transition-all duration-300 h-1.5 bg-white/20 rounded-full appearance-none cursor-pointer accent-accent"
-=======
                 className="w-0 group-hover/volume:w-20 transition-all duration-300 h-1.5 bg-white/20 rounded-full appearance-none cursor-pointer accent-accent"
->>>>>>> Stashed changes
               />
             </div>
           </div>
 
-<<<<<<< Updated upstream
-          <div className="flex items-center gap-6">
-            {/* Quality Selector */}
-            <div className="relative group/quality">
-              <button className="px-4 py-2 text-xs font-bold uppercase tracking-widest bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all flex items-center gap-3 active:scale-95">
-                <span>{currentSource && formatQuality(currentSource.quality)}</span>
-                <svg className="w-3.5 h-3.5 opacity-40 transition-transform group-hover/quality:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"/></svg>
-=======
           {/* Unified Controls Container */}
           <div className="flex items-center gap-2 p-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-sm">
             {/* Episodes Button (TV Shows Only) */}
@@ -647,7 +565,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
                 <span className="hidden sm:inline">Episodes</span>
->>>>>>> Stashed changes
               </button>
             )}
 
@@ -708,13 +625,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </div>
 
             {/* Fullscreen Toggle */}
-<<<<<<< Updated upstream
-            <button onClick={(e) => toggleFullscreen(e)} className="hover:text-accent transition-all active:scale-90 p-1.5 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-=======
             <button onClick={(e) => toggleFullscreen(e)} className="hover:bg-accent/20 hover:border-accent/50 transition-all active:scale-95 p-2 border border-transparent rounded-lg" title="Fullscreen">
               <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
->>>>>>> Stashed changes
                 <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
               </svg>
             </button>

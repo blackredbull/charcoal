@@ -133,23 +133,14 @@ const BottomBar: React.FC<BottomBarProps> = ({
           <button
             onClick={onTogglePlayer}
             className={cn(
-<<<<<<< Updated upstream
-              "h-10 px-3 md:px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center gap-1.5 transition-all duration-200 border border-white/20 hover:border-accent flex-shrink-0",
-              useCustomPlayer && "bg-accent/20 border-accent text-accent"
-=======
               "h-10 px-3 md:px-4 bg-white/10 hover:bg-white/15 text-white rounded-lg flex items-center gap-1.5 transition-all duration-200 border border-white/10 hover:border-accent flex-shrink-0 active:scale-95",
               useCustomPlayer && "bg-accent/20 border-accent/50 text-accent hover:bg-accent/30"
->>>>>>> Stashed changes
             )}
             title={useCustomPlayer ? "Switch to Embed Player" : "Switch to Custom Player"}
           >
             <MonitorPlay className="w-4 h-4" />
             <span className="font-medium text-sm hidden lg:inline">
-<<<<<<< Updated upstream
-              {useCustomPlayer ? "Use Embed" : "Use Custom"}
-=======
               {useCustomPlayer ? "Embed" : "Custom"}
->>>>>>> Stashed changes
             </span>
           </button>
         )}
@@ -159,13 +150,8 @@ const BottomBar: React.FC<BottomBarProps> = ({
             ref={sourcesButtonRef}
             onClick={() => setIsSourcesMenuOpen(!isSourcesMenuOpen)}
             className={cn(
-<<<<<<< Updated upstream
-              "h-10 px-3 md:px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center gap-1.5 transition-all duration-200 border border-white/20 hover:border-red-500 flex-shrink-0",
-              !useCustomPlayer && "bg-red-500/20 border-red-500 text-red-500"
-=======
               "h-10 px-3 md:px-4 bg-white/10 hover:bg-white/15 text-white rounded-lg flex items-center gap-1.5 transition-all duration-200 border border-white/10 hover:border-accent flex-shrink-0 active:scale-95",
               !useCustomPlayer && "bg-accent/20 border-accent/50 text-accent hover:bg-accent/30"
->>>>>>> Stashed changes
             )}
           >
             <Server className="w-4 h-4" />
