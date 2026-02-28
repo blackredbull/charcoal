@@ -65,18 +65,18 @@ const BottomBar: React.FC<BottomBarProps> = ({
     )}>
       <button
         onClick={onBack}
-        className="h-10 px-3 md:px-4 bg-white/10 hover:bg-white/15 text-white rounded-lg flex items-center gap-1.5 transition-all duration-200 border border-white/10 hover:border-white/20 flex-shrink-0 active:scale-95"
+        className="h-10 px-3 md:px-4 bg-white/5 hover:bg-white/10 text-white rounded-xl flex items-center gap-2 transition-all duration-200 border border-white/10 hover:border-white/20 flex-shrink-0 active:scale-95"
       >
         <ArrowLeft className="w-4 h-4" />
-        <span className="font-medium text-sm hidden md:inline">Back</span>
+        <span className="font-bold text-sm hidden md:inline">Back</span>
       </button>
 
-      <div className="relative flex items-center gap-1 bg-white/5 rounded-lg p-1 border border-white/10 flex-1 max-w-[calc(100%-160px)] md:max-w-[500px]">
+      <div className="relative flex items-center gap-1 bg-white/5 rounded-xl p-1 border border-white/10 flex-1 max-w-[calc(100%-160px)] md:max-w-[500px]">
         {!isMovie && (
           <button
             onClick={onPrevious}
             disabled={isFirstEpisode}
-            className="h-8 px-2 bg-white/10 hover:bg-white/15 text-white rounded-lg flex items-center justify-center transition-all duration-200 border border-white/10 hover:border-accent disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-95"
+            className="h-8 px-2 bg-white/5 hover:bg-white/10 text-white rounded-lg flex items-center justify-center transition-all duration-200 border border-white/10 hover:border-accent disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-95"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -84,13 +84,13 @@ const BottomBar: React.FC<BottomBarProps> = ({
         <button
           ref={episodeButtonRef}
           onClick={() => setIsEpisodeMenuOpen(!isEpisodeMenuOpen)}
-          className="h-8 px-3 bg-white/10 hover:bg-white/15 text-white rounded-lg flex items-center justify-center transition-all duration-200 border border-white/10 hover:border-accent flex-1 min-w-0 overflow-hidden active:scale-95"
+          className="h-8 px-3 bg-white/5 hover:bg-white/10 text-white rounded-lg flex items-center justify-center transition-all duration-200 border border-white/10 hover:border-accent flex-1 min-w-0 overflow-hidden active:scale-95"
         >
-          <div className="flex items-center justify-center gap-2 text-sm font-medium w-full min-w-0">
+          <div className="flex items-center justify-center gap-2 text-sm font-bold w-full min-w-0">
             <span className="truncate text-center">{showTitle}</span>
             {!isMovie && currentSeason && currentEpisode && (
               <span className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-white/50">•</span>
+                <span className="text-white/20">•</span>
                 <span className="text-accent">
                   S{currentSeason.padStart(2, '0')}E{currentEpisode.padStart(2, '0')}
                 </span>
@@ -102,7 +102,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
           <button
             onClick={onNext}
             disabled={isLastEpisode}
-            className="h-8 px-2 bg-white/10 hover:bg-white/15 text-white rounded-lg flex items-center justify-center transition-all duration-200 border border-white/10 hover:border-accent disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-95"
+            className="h-8 px-2 bg-white/5 hover:bg-white/10 text-white rounded-lg flex items-center justify-center transition-all duration-200 border border-white/10 hover:border-accent disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-95"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -134,13 +134,13 @@ const BottomBar: React.FC<BottomBarProps> = ({
           <button
             onClick={onTogglePlayer}
             className={cn(
-              "h-10 px-3 md:px-4 bg-white/10 hover:bg-white/15 text-white rounded-lg flex items-center gap-1.5 transition-all duration-200 border border-white/10 hover:border-accent flex-shrink-0 active:scale-95",
+              "h-10 px-3 md:px-4 bg-white/5 hover:bg-white/10 text-white rounded-xl flex items-center gap-2 transition-all duration-200 border border-white/10 hover:border-accent flex-shrink-0 active:scale-95",
               useCustomPlayer && "bg-accent/20 border-accent/50 text-accent hover:bg-accent/30"
             )}
             title={useCustomPlayer ? "Switch to Embed Player" : "Switch to Custom Player"}
           >
             <MonitorPlay className="w-4 h-4" />
-            <span className="font-medium text-sm hidden lg:inline">
+            <span className="font-bold text-sm hidden lg:inline">
               {useCustomPlayer ? "Embed" : "Custom"}
             </span>
           </button>
@@ -151,12 +151,12 @@ const BottomBar: React.FC<BottomBarProps> = ({
             ref={sourcesButtonRef}
             onClick={() => setIsSourcesMenuOpen(!isSourcesMenuOpen)}
             className={cn(
-              "h-10 px-3 md:px-4 bg-white/10 hover:bg-white/15 text-white rounded-lg flex items-center gap-1.5 transition-all duration-200 border border-white/10 hover:border-accent flex-shrink-0 active:scale-95",
+              "h-10 px-3 md:px-4 bg-white/5 hover:bg-white/10 text-white rounded-xl flex items-center gap-2 transition-all duration-200 border border-white/10 hover:border-accent flex-shrink-0 active:scale-95",
               !useCustomPlayer && "bg-accent/20 border-accent/50 text-accent hover:bg-accent/30"
             )}
           >
             <Server className="w-4 h-4" />
-            <span className="font-medium text-sm hidden md:inline">Source</span>
+            <span className="font-bold text-sm hidden md:inline">Source</span>
           </button>
 
           <SourcesMenu

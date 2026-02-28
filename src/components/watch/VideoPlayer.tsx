@@ -4,6 +4,7 @@ import { BackendApiResponse } from '../../api/player-types';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface VideoPlayerProps {
+  id?: number;
   videoUrl?: string;
   jellyData?: BackendApiResponse | null;
   useCustomPlayer: boolean;
@@ -24,6 +25,7 @@ interface VideoPlayerProps {
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  id,
   videoUrl,
   jellyData,
   useCustomPlayer,
@@ -53,6 +55,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return (
       <div className="relative w-full h-full bg-black overflow-hidden">
         <CustomVideoPlayer
+          id={id}
           apiResponse={jellyData}
           isMovie={isMovie}
           seasonNumber={seasonNumber}

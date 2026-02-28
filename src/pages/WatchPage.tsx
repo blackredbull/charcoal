@@ -151,6 +151,7 @@ const WatchPage: React.FC = () => {
           </div>
         ) : (
           <VideoPlayer
+            id={Number(id)}
             videoUrl={videoUrl}
             jellyData={jellyData}
             useCustomPlayer={useCustomPlayer}
