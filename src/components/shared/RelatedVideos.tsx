@@ -28,20 +28,18 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
   useEffect(() => {
     const checkScroll = () => {
       if (!containerRef.current) return;
-      
+     
       setShowLeftArrow(containerRef.current.scrollLeft > 0);
       setShowRightArrow(
         containerRef.current.scrollLeft <
           containerRef.current.scrollWidth - containerRef.current.clientWidth - 10
       );
     };
-
     const container = containerRef.current;
     if (container) {
       container.addEventListener('scroll', checkScroll, { passive: true });
       checkScroll();
     }
-
     return () => {
       if (container) {
         container.removeEventListener('scroll', checkScroll);
@@ -51,12 +49,12 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
 
   const scroll = (direction: 'left' | 'right') => {
     if (!containerRef.current) return;
-    
+   
     const scrollAmount = containerRef.current.clientWidth * 0.8;
     const newScrollLeft = direction === 'left'
       ? containerRef.current.scrollLeft - scrollAmount
       : containerRef.current.scrollLeft + scrollAmount;
-    
+   
     containerRef.current.scrollTo({
       left: newScrollLeft,
       behavior: 'smooth'
@@ -77,7 +75,7 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
   const onDrag = (e: React.MouseEvent) => {
     if (!isDragging || !containerRef.current) return;
     e.preventDefault();
-    
+   
     const x = e.pageX - (containerRef.current.offsetLeft || 0);
     const walk = (x - startX) * 2;
     containerRef.current.scrollLeft = scrollLeft - walk;
