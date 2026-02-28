@@ -183,7 +183,7 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
                 <div className="absolute bottom-2 left-2">
                   <div className={cn(
                     "px-2 py-1 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10",
-                    video.type === 'Trailer' ? "bg-red-600/80" : "bg-light-text-primary/60 dark:bg-dark-text-primary/60"
+                    video.type === 'Trailer' ? "bg-accent/80" : "bg-light-text-primary/60 dark:bg-dark-text-primary/60"
                   )}>
                     {video.type}
                   </div>

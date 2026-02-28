@@ -113,7 +113,7 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
             animate={{ opacity: 1, y: 0 }}
             className="w-48 md:w-64 lg:w-72 flex-shrink-0 relative"
           >
-            <div className="absolute -inset-1 bg-gradient-to-b from-accent/50 to-purple-500/50 rounded-2xl blur opacity-20" />
+            <div className="absolute -inset-1 bg-gradient-to-b from-accent/50 to-accent/30 rounded-2xl blur opacity-20" />
             <img
               src={getImageUrl(posterPath, 'w500')}
               alt={title}
@@ -166,8 +166,8 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
                 ) : (
                   numberOfSeasons && (
                     <div className="flex items-center gap-2 group/stat">
-                      <div className="p-2 bg-purple-400/10 dark:bg-purple-400/10 rounded-lg border border-purple-400/20 dark:border-purple-400/20 group-hover/stat:bg-purple-400/20 transition-colors">
-                        <Layers className="w-5 h-5 text-purple-400" />
+                      <div className="p-2 bg-accent/10 dark:bg-accent/10 rounded-lg border border-accent/20 dark:border-accent/20 group-hover/stat:bg-accent/20 transition-colors">
+                        <Layers className="w-5 h-5 text-accent" />
                       </div>
                       <div>
                         <div className="text-lg font-bold text-light-text-primary dark:text-dark-text-primary">{numberOfSeasons} {numberOfSeasons === 1 ? 'Season' : 'Seasons'}</div>
