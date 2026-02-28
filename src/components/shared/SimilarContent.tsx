@@ -189,30 +189,35 @@ const SimilarContent: React.FC<SimilarContentProps> = ({
 
                   {/* Overlay - darker on hover like episode selector */}
                   <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300" />
+
+                  {/* Year Badge - Top Left */}
+                  {year && (
+                    <div className="absolute top-2 left-2">
+                      <div className="px-2 py-1 bg-black/50 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10">
+                        {year}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Rating Badge - Top Right */}
+                  {item.vote_average > 0 && (
+                    <div className="absolute top-2 right-2">
+                      <div className="flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur-md text-white rounded-lg border border-white/10">
+                        <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                        <span className="text-[10px] font-bold">{item.vote_average.toFixed(1)}</span>
+                      </div>
+                    </div>
+                  )}
                 </Link>
 
                 {/* Info Area */}
-                <div className="px-2 pb-2 flex flex-col gap-2 min-h-0">
+                <div className="px-2 pb-2 flex flex-col gap-1.5 min-h-0">
                   <Link
                     to={getMediaUrl(item)}
                     className="font-bold text-sm leading-tight text-white line-clamp-2 hover:text-accent transition-colors"
                   >
                     {itemTitle}
                   </Link>
-
-                  <div className="flex flex-col gap-1.5">
-                    {year && (
-                      <div className="px-2 py-1 bg-black/40 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10 w-fit">
-                        {year}
-                      </div>
-                    )}
-                    {item.vote_average > 0 && (
-                      <div className="flex items-center gap-1 px-2 py-1 bg-black/40 backdrop-blur-md text-white rounded-lg border border-white/10 w-fit">
-                        <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                        <span className="text-[10px] font-bold">{item.vote_average.toFixed(1)}</span>
-                      </div>
-                    )}
-                  </div>
                 </div>
               </motion.div>
             );

@@ -459,37 +459,33 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
           </div>
         </div>
 
-        {/* Footer with Resume and Navigation */}
-        <div className="p-4 md:p-6 border-t border-border-light dark:border-border-dark bg-light-surface/50 dark:bg-dark-surface/50 flex items-center justify-between gap-3">
-          <div>
-            {showResumeButton && currentProgress?.season && currentProgress?.episode && (
-              <button
-                onClick={handleResumeClick}
-                className="flex items-center justify-center gap-2 py-2.5 px-5 bg-accent hover:bg-accent/90 text-white rounded-xl shadow-lg shadow-accent/20 transition-all text-sm font-bold active:scale-95"
-              >
-                <StepForward className="w-4 h-4" />
-                Resume
-              </button>
-            )}
-          </div>
-          <div className="flex items-center gap-3">
+        {/* Footer with Navigation and Resume */}
+        <div className="p-4 md:p-6 border-t border-border-light dark:border-border-dark bg-light-surface/50 dark:bg-dark-surface/50 flex items-center justify-end gap-3">
+          <button
+            disabled={isFirstEpisode}
+            onClick={() => onEpisodePrevious?.()}
+            className="flex items-center justify-center gap-2 py-2.5 px-5 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-white rounded-xl border border-white/10 transition-all text-sm font-bold active:scale-95"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Previous
+          </button>
+          {showResumeButton && currentProgress?.season && currentProgress?.episode && (
             <button
-              disabled={isFirstEpisode}
-              onClick={() => onEpisodePrevious?.()}
-              className="flex items-center justify-center gap-2 py-2.5 px-5 bg-light-surface/60 dark:bg-dark-surface/60 hover:bg-light-text-secondary/10 dark:hover:bg-dark-text-secondary/10 disabled:opacity-30 disabled:hover:bg-light-surface/60 dark:disabled:hover:bg-dark-surface/60 text-light-text-primary dark:text-dark-text-primary rounded-xl border border-border-light dark:border-border-dark transition-all text-sm font-bold active:scale-95"
+              onClick={handleResumeClick}
+              className="flex items-center justify-center gap-2 py-2.5 px-5 bg-accent hover:bg-accent/90 text-white rounded-xl shadow-lg shadow-accent/20 transition-all text-sm font-bold active:scale-95"
             >
-              <ChevronLeft className="w-4 h-4" />
-              Previous
+              <StepForward className="w-4 h-4" />
+              Resume
             </button>
-            <button
-              disabled={isLastEpisode}
-              onClick={() => onEpisodeNext?.()}
-              className="flex items-center justify-center gap-2 py-2.5 px-5 bg-accent hover:bg-accent/90 disabled:opacity-30 text-white rounded-xl shadow-lg shadow-accent/20 transition-all text-sm font-bold active:scale-95"
-            >
-              Next Episode
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+          )}
+          <button
+            disabled={isLastEpisode}
+            onClick={() => onEpisodeNext?.()}
+            className="flex items-center justify-center gap-2 py-2.5 px-5 bg-accent hover:bg-accent/90 disabled:opacity-30 text-white rounded-xl shadow-lg shadow-accent/20 transition-all text-sm font-bold active:scale-95"
+          >
+            Next Episode
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </>

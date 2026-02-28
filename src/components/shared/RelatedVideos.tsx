@@ -182,11 +182,11 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
                   </div>
                 </div>
 
-                {/* Tags - darker glassy style */}
+                {/* Tags - solid glassy style matching episode selector */}
                 <div className="absolute bottom-2 left-2">
                   <div className={cn(
-                    "px-2 py-1 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border",
-                    video.type === 'Trailer' ? "bg-accent/30 border-accent/40" : "bg-black/40 border-white/10"
+                    "px-2 py-1 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider",
+                    video.type === 'Trailer' ? "bg-accent/80" : "bg-white/30"
                   )}>
                     {video.type}
                   </div>

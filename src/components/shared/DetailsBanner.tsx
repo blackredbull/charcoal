@@ -129,7 +129,7 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
               transition={{ delay: 0.1 }}
             >
               <div className="flex justify-center lg:justify-start items-center gap-3 mb-4">
-                <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-full text-xs font-medium uppercase tracking-widest flex items-center gap-2">
+                <span className="px-3 py-1 bg-accent/20 backdrop-blur-md text-accent border border-accent/40 rounded-full text-xs font-medium uppercase tracking-widest flex items-center gap-2">
                   {type === 'movie' ? <Film className="w-3.5 h-3.5" /> : <Tv className="w-3.5 h-3.5" />}
                   {type === 'movie' ? 'Movie' : 'TV Series'}
                 </span>
