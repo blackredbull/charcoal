@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Film, Tv, Star, Clock, Play, Bookmark, StepForward } from 'lucide-react';
+import { Film, Tv, Star, Clock, Play, Bookmark, StepForward, ChevronDown, ChevronUp, Calendar, Info, Layers } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getImageUrl } from '../../api/config';
 import { cn } from '../../lib/utils';
 import { WatchStatus, WatchHistoryItem } from '../../store/useStore';
@@ -91,159 +92,246 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
   };
 
   return (
-    <div 
-      className="bg-light-bg dark:bg-dark-bg border-2 border-gray-400/50 dark:border-white/20 rounded-2xl overflow-hidden relative"
-      style={{
-        backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgb(18, 18, 18) 100%), url(${getImageUrl(backdropPath)})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}
-    >
-      <div className="p-4 md:p-6">
-        <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-          <div className="w-40 md:w-48 flex-shrink-0">
+    <div className="relative w-full rounded-[2rem] overflow-hidden group/banner shadow-2xl">
+      {/* Background with multiple layers for depth */}
+      <div className="absolute inset-0">
+        <img
+          src={getImageUrl(backdropPath, 'original')}
+          alt={title}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover/banner:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent" />
+        <div className="absolute inset-0 backdrop-blur-[2px]" />
+      </div>
+
+      <div className="relative z-10 p-6 md:p-10 lg:p-14">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-end">
+          {/* Poster Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-48 md:w-64 lg:w-72 flex-shrink-0 relative group/poster"
+          >
+            <div className="absolute -inset-1 bg-gradient-to-b from-accent/50 to-purple-500/50 rounded-2xl blur opacity-20 group-hover/poster:opacity-40 transition duration-500" />
             <img
               src={getImageUrl(posterPath, 'w500')}
               alt={title}
-              className="w-full rounded-lg border border-gray-400/50 dark:border-white/20"
+              className="relative w-full rounded-2xl border border-white/10 shadow-2xl transition-transform duration-500 group-hover/poster:scale-[1.02]"
             />
-          </div>
-
-          <div className="flex-1 text-center md:text-left">
-            <div className="flex justify-center md:justify-start items-center gap-2 mb-2">
-              {type === 'movie' ? (
-                <Film className="w-5 h-5 text-white" />
-              ) : (
-                <Tv className="w-5 h-5 text-white" />
-              )}
-            </div>
-
-            <h1 className="text-2xl md:text-3xl font-bold mb-2 text-white">
-              {title} <span className="text-white/60">({year})</span>
-            </h1>
-
-            <div className="flex justify-center md:justify-start items-center gap-3 mb-3">
-              <div className="flex items-center">
-                <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                <span className="ml-1 text-white text-base">{rating.toFixed(1)}</span>
-              </div>
-              {type === 'movie' ? (
-                runtime > 0 && (
-                  <div className="flex items-center text-white">
-                    <Clock className="w-5 h-5" />
-                    <span className="ml-2">{formatDuration(runtime)}</span>
-                  </div>
-                )
-              ) : (
-                numberOfSeasons && (
-                  <div className="flex items-center text-white">
-                    <span>{numberOfSeasons} Season{numberOfSeasons > 1 ? 's' : ''}</span>
-                  </div>
-                )
-              )}
-              {contentRating && (
-                <span className="text-white text-sm px-2 py-0.5 border border-white/20 rounded">
-                  {contentRating}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-3">
-              {genres?.map((genre) => (
-                <span key={genre.id} className="px-2 py-1 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full">
-                  {genre.name}
-                </span>
-              ))}
-            </div>
-
-            <div className="relative mb-3 max-w-2xl mx-auto md:mx-0">
-              <div className={cn(
-                "relative text-sm md:text-base text-white/90",
-                !isExpanded && "max-h-[3.5em] overflow-hidden"
-              )}>
-                <p ref={textRef} className="leading-relaxed">
-                  {overview}
-                </p>
-                {needsExpansion && !isExpanded && (
-                  <div className="absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-black to-transparent" />
-                )}
-              </div>
-              {needsExpansion && (
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-white/60 hover:text-white text-sm font-medium mt-1"
-                >
-                  {isExpanded ? 'Show less' : 'Read more'}
-                </button>
-              )}
-            </div>
-
-            <div className="flex justify-center md:justify-start items-center gap-2">
+            
+            {/* Play Button Overlay on Poster (Mobile/Desktop hover) */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/poster:opacity-100 transition-opacity duration-300">
               {type === 'movie' ? (
                 <Link
                   to={getWatchUrl()}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-lg border border-white/20"
+                  className="w-16 h-16 bg-accent rounded-full flex items-center justify-center shadow-2xl border border-white/20 transform scale-75 group-hover/poster:scale-100 transition-transform duration-500"
                 >
-                  {resumeInfo && !resumeInfo.isCompleted ? (
-                    <>
-                      <StepForward className="w-5 h-5 text-white" />
-                      <span className="text-white font-medium">Resume</span>
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-5 h-5 text-white" />
-                      <span className="text-white font-medium">Play</span>
-                    </>
-                  )}
+                  <Play className="w-8 h-8 text-white fill-current ml-1" />
                 </Link>
               ) : (
                 <button
                   onClick={onPlayClick}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-lg border border-white/20"
+                  className="w-16 h-16 bg-accent rounded-full flex items-center justify-center shadow-2xl border border-white/20 transform scale-75 group-hover/poster:scale-100 transition-transform duration-500"
                 >
-                  {resumeInfo && !resumeInfo.isCompleted ? (
-                    <>
-                      <StepForward className="w-5 h-5 text-white" />
-                      <span className="text-white font-medium">Resume</span>
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-5 h-5 text-white" />
-                      <span className="text-white font-medium">Play</span>
-                    </>
-                  )}
+                  <Play className="w-8 h-8 text-white fill-current ml-1" />
                 </button>
               )}
-
-              <div className="relative">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActiveMenu(activeMenu === Number(id) ? null : Number(id));
-                  }}
-                  className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center transition-colors shadow-md border border-white/20",
-                    watchlistItem
-                      ? "bg-red-600 hover:bg-red-700"
-                      : "bg-white/20 hover:bg-white/30"
-                  )}
-                >
-                  <Bookmark className={cn(
-                    "w-5 h-5 transition-transform",
-                    watchlistItem ? "text-white fill-white" : "text-white"
-                  )} />
-                </button>
-
-                <WatchlistMenu
-                  isOpen={activeMenu === Number(id)}
-                  onClose={() => setActiveMenu(null)}
-                  onAdd={onWatchlistAdd}
-                  onRemove={onWatchlistRemove}
-                  currentStatus={watchlistItem?.status}
-                  position="top-left"
-                />
-              </div>
             </div>
+          </motion.div>
+
+          {/* Content Section */}
+          <div className="flex-1 text-center lg:text-left">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="flex justify-center lg:justify-start items-center gap-3 mb-4">
+                <span className="px-3 py-1 bg-accent/20 backdrop-blur-md text-accent border border-accent/30 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                  {type === 'movie' ? <Film className="w-3.5 h-3.5" /> : <Tv className="w-3.5 h-3.5" />}
+                  {type === 'movie' ? 'Movie' : 'TV Series'}
+                </span>
+                {contentRating && (
+                  <span className="px-3 py-1 bg-white/5 backdrop-blur-md text-white/80 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest">
+                    {contentRating}
+                  </span>
+                )}
+              </div>
+
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 text-white tracking-tight leading-none">
+                {title} <span className="text-white/40 font-light">{year}</span>
+              </h1>
+
+              {/* Stats Bar */}
+              <div className="flex flex-wrap justify-center lg:justify-start items-center gap-6 mb-6">
+                <div className="flex items-center gap-2 group/stat">
+                  <div className="p-2 bg-yellow-400/10 rounded-lg border border-yellow-400/20 group-hover/stat:bg-yellow-400/20 transition-colors">
+                    <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-white">{rating.toFixed(1)}</div>
+                    <div className="text-[10px] text-white/40 uppercase font-bold tracking-tighter">Rating</div>
+                  </div>
+                </div>
+
+                {type === 'movie' ? (
+                  runtime > 0 && (
+                    <div className="flex items-center gap-2 group/stat">
+                      <div className="p-2 bg-blue-400/10 rounded-lg border border-blue-400/20 group-hover/stat:bg-blue-400/20 transition-colors">
+                        <Clock className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-white">{formatDuration(runtime)}</div>
+                        <div className="text-[10px] text-white/40 uppercase font-bold tracking-tighter">Duration</div>
+                      </div>
+                    </div>
+                  )
+                ) : (
+                  numberOfSeasons && (
+                    <div className="flex items-center gap-2 group/stat">
+                      <div className="p-2 bg-purple-400/10 rounded-lg border border-purple-400/20 group-hover/stat:bg-purple-400/20 transition-colors">
+                        <Layers className="w-5 h-5 text-purple-400" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-white">{numberOfSeasons} Seasons</div>
+                        <div className="text-[10px] text-white/40 uppercase font-bold tracking-tighter">Content</div>
+                      </div>
+                    </div>
+                  )
+                )}
+
+                <div className="flex items-center gap-2 group/stat">
+                  <div className="p-2 bg-green-400/10 rounded-lg border border-green-400/20 group-hover/stat:bg-green-400/20 transition-colors">
+                    <Calendar className="w-5 h-5 text-green-400" />
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-white">{year}</div>
+                    <div className="text-[10px] text-white/40 uppercase font-bold tracking-tighter">Release</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Genres */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-8">
+                {genres?.map((genre) => (
+                  <span 
+                    key={genre.id} 
+                    className="px-4 py-1.5 bg-white/[0.03] hover:bg-white/[0.08] backdrop-blur-md text-white/70 text-sm font-medium rounded-xl border border-white/10 transition-colors cursor-default"
+                  >
+                    {genre.name}
+                  </span>
+                ))}
+              </div>
+
+              {/* Overview with Fixed Expansion */}
+              <div className="relative mb-8 max-w-2xl mx-auto lg:mx-0">
+                <motion.div
+                  initial={false}
+                  animate={{ height: isExpanded ? 'auto' : '4.5em' }}
+                  className="relative overflow-hidden text-sm md:text-base text-white/60 leading-relaxed text-left"
+                >
+                  <p ref={textRef}>
+                    {overview}
+                  </p>
+                  <AnimatePresence>
+                    {needsExpansion && !isExpanded && (
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-[#0a0a0a] to-transparent" 
+                      />
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+                {needsExpansion && (
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="flex items-center gap-1.5 text-accent hover:text-accent/80 text-sm font-bold uppercase tracking-widest mt-2 transition-colors group/read"
+                  >
+                    {isExpanded ? (
+                      <>Show Less <ChevronUp className="w-4 h-4 group-hover/read:-translate-y-0.5 transition-transform" /></>
+                    ) : (
+                      <>Read More <ChevronDown className="w-4 h-4 group-hover/read:translate-y-0.5 transition-transform" /></>
+                    )}
+                  </button>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center gap-4">
+                {type === 'movie' ? (
+                  <Link
+                    to={getWatchUrl()}
+                    className="w-full sm:w-auto px-8 py-4 bg-accent hover:bg-accent/90 text-white rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-accent/20 active:scale-95 group/play border border-white/20"
+                  >
+                    {resumeInfo && !resumeInfo.isCompleted ? (
+                      <>
+                        <StepForward className="w-6 h-6 fill-current group-hover:translate-x-1 transition-transform" />
+                        <span className="font-bold text-lg uppercase tracking-wide">Resume</span>
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-6 h-6 fill-current group-hover:scale-110 transition-transform" />
+                        <span className="font-bold text-lg uppercase tracking-wide">Watch Now</span>
+                      </>
+                    )}
+                  </Link>
+                ) : (
+                  <button
+                    onClick={onPlayClick}
+                    className="w-full sm:w-auto px-8 py-4 bg-accent hover:bg-accent/90 text-white rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-accent/20 active:scale-95 group/play border border-white/20"
+                  >
+                    {resumeInfo && !resumeInfo.isCompleted ? (
+                      <>
+                        <StepForward className="w-6 h-6 fill-current group-hover:translate-x-1 transition-transform" />
+                        <span className="font-bold text-lg uppercase tracking-wide">Resume Series</span>
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-6 h-6 fill-current group-hover:scale-110 transition-transform" />
+                        <span className="font-bold text-lg uppercase tracking-wide">Start Watching</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                <div className="relative w-full sm:w-auto">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveMenu(activeMenu === Number(id) ? null : Number(id));
+                    }}
+                    className={cn(
+                      "w-full sm:w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-xl active:scale-95 border",
+                      watchlistItem
+                        ? "bg-white/10 border-accent/50 text-accent"
+                        : "bg-white/5 border-white/10 text-white hover:bg-white/10"
+                    )}
+                  >
+                    <Bookmark className={cn(
+                      "w-6 h-6 transition-transform",
+                      watchlistItem ? "fill-current" : ""
+                    )} />
+                  </button>
+
+                  <WatchlistMenu
+                    isOpen={activeMenu === Number(id)}
+                    onClose={() => setActiveMenu(null)}
+                    onAdd={onWatchlistAdd}
+                    onRemove={onWatchlistRemove}
+                    currentStatus={watchlistItem?.status}
+                    position="top-left"
+                  />
+                </div>
+                
+                {/* Additional Info Button */}
+                <button className="hidden sm:flex w-14 h-14 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl items-center justify-center transition-all active:scale-95 text-white/60 hover:text-white">
+                  <Info className="w-6 h-6" />
+                </button>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>

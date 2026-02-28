@@ -1,4 +1,3 @@
-// API types
 export interface Movie {
   id: number;
   title: string;
@@ -8,6 +7,11 @@ export interface Movie {
   release_date: string;
   overview: string;
   genre_ids: number[];
+  genres?: { id: number; name: string }[];
+  runtime: number;
+  videos?: { results: any[] };
+  similar?: { results: Movie[] };
+  recommendations?: { results: Movie[] };
 }
 
 export interface TVShow {
@@ -19,6 +23,12 @@ export interface TVShow {
   first_air_date: string;
   overview: string;
   genre_ids: number[];
+  genres?: { id: number; name: string }[];
+  number_of_seasons?: number;
+  seasons?: any[];
+  videos?: { results: any[] };
+  similar?: { results: TVShow[] };
+  recommendations?: { results: TVShow[] };
 }
 
 export type MediaType = 'movie' | 'tv';

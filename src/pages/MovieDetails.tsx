@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Video as VideoIcon } from 'lucide-react';
 import { useStore, WatchStatus } from '../store/useStore';
 import { useMovieDetails } from '../api/hooks/useMovieDetails';
 import DetailsBanner from '../components/shared/DetailsBanner';
 import RelatedVideos from '../components/shared/RelatedVideos';
-import SimilarContent from '../components/shared/SimilarContent';
 
 const MovieDetails = () => {
   const { id } = useParams();
@@ -17,7 +18,13 @@ const MovieDetails = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  if (isLoading || !details) return <div>Loading...</div>;
+  if (isLoading || !details) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-accent/30 border-t-accent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   const year = new Date(details.release_date).getFullYear();
 
@@ -32,8 +39,17 @@ const MovieDetails = () => {
     });
   };
 
+  const youtubeVideos = details.videos?.results.filter(video => 
+    video.site === 'YouTube' && 
+    (video.type === 'Trailer' || video.type === 'Teaser' || video.type === 'Behind the Scenes')
+  ) || [];
+
   return (
-    <div className="min-h-screen space-y-8">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen space-y-12 pb-20"
+    >
       <DetailsBanner
         type="movie"
         title={details.title}
@@ -52,28 +68,28 @@ const MovieDetails = () => {
         watchHistory={watchHistory}
       />
 
-      {details.videos?.results && (
-        <div className="bg-light-bg dark:bg-dark-bg border-2 border-gray-400/50 dark:border-white/20 rounded-2xl overflow-hidden">
-          <div className="p-3 border-b border-border-light dark:border-border-dark">
-            <h2 className="text-xl font-semibold">Related Videos</h2>
+      {youtubeVideos.length > 0 && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative px-4 md:px-0"
+        >
+          <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div className="px-8 py-6 border-b border-white/5 flex items-center gap-3">
+              <div className="p-2 bg-accent/20 rounded-xl border border-accent/30">
+                <VideoIcon className="w-5 h-5 text-accent" />
+              </div>
+              <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Related Videos</h2>
+              <span className="text-white/20 ml-auto font-mono text-sm">{youtubeVideos.length} Items</span>
+            </div>
+            <div className="p-4 md:p-8">
+              <RelatedVideos videos={youtubeVideos} />
+            </div>
           </div>
-          <div className="p-6">
-            <RelatedVideos
-              videos={details.videos.results.filter(video => 
-                video.site === 'YouTube' && 
-                (video.type === 'Trailer' || video.type === 'Teaser')
-              )}
-            />
-          </div>
-        </div>
+        </motion.div>
       )}
-
-      <SimilarContent
-        similar={details.similar}
-        recommendations={details.recommendations}
-        type="movie"
-      />
-    </div>
+    </motion.div>
   );
 };
 
