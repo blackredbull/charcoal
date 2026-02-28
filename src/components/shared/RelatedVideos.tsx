@@ -152,7 +152,6 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
               rel="noopener noreferrer"
               className={cn(
                 "group flex-shrink-0 w-[300px] flex flex-col gap-3 p-3 rounded-2xl transition-all text-left border relative overflow-hidden",
-                // Hover styles matching SimilarContent & episode cards
                 "bg-white/[0.03] border-white/5 hover:bg-white/[0.08] hover:border-white/10"
               )}
               onClick={(e) => {
@@ -166,27 +165,29 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
                 <img
                   src={`https://img.youtube.com/vi/${video.key}/maxresdefault.jpg`}
                   alt={video.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  className="w-full h-full object-cover"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${video.key}/mqdefault.jpg`;
                   }}
                 />
-                {/* Overlay - darkens more on hover */}
+                {/* Overlay */}
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300" />
 
-                {/* Play Icon - appears on hover */}
+                {/* Play Icon */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center shadow-2xl border-2 border-white/20">
                     <Play className="w-8 h-8 text-white fill-current ml-1" />
                   </div>
                 </div>
 
-                {/* Type Tag */}
+                {/* Type Tag – matched to Watching / Watched style */}
                 <div className="absolute bottom-2 left-2">
-                  <div className={cn(
-                    "px-2 py-1 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider",
-                    video.type === 'Trailer' ? "bg-accent/80" : "bg-white/30"
-                  )}>
+                  <div
+                    className={cn(
+                      "px-2 py-1 bg-black/60 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10 shadow-sm",
+                      video.type === 'Trailer' && "bg-accent/80 border-accent/40 text-white"
+                    )}
+                  >
                     {video.type}
                   </div>
                 </div>
