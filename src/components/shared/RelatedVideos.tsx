@@ -128,14 +128,17 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
       </AnimatePresence>
       
       {/* Scrollable Container */}
-      <div 
+      <div
         ref={containerRef}
         className="overflow-x-auto scrollbar-none px-2 py-4"
         onMouseDown={startDrag}
         onMouseUp={stopDrag}
         onMouseLeave={stopDrag}
         onMouseMove={onDrag}
-        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        onTouchStart={(e) => startDrag(e as unknown as React.MouseEvent)}
+        onTouchEnd={stopDrag}
+        onTouchMove={(e) => onDrag(e as unknown as React.MouseEvent)}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'pan-y' }}
       >
         <div className="flex gap-6">
           {sortedVideos.map((video, index) => (
@@ -179,11 +182,11 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
                   </div>
                 </div>
 
-                {/* Tags - glassy style */}
+                {/* Tags - darker glassy style */}
                 <div className="absolute bottom-2 left-2">
                   <div className={cn(
                     "px-2 py-1 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border",
-                    video.type === 'Trailer' ? "bg-accent/40 border-accent/60" : "bg-white/10 border-white/20"
+                    video.type === 'Trailer' ? "bg-accent/30 border-accent/40" : "bg-black/40 border-white/10"
                   )}>
                     {video.type}
                   </div>

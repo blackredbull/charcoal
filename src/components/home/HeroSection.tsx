@@ -166,7 +166,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items }) => {
                   className={cn(
                     "w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center transition-colors shadow-md border border-white/20",
                     watchlistItem
-                      ? "bg-red-600 hover:bg-red-700"
+                      ? "bg-accent hover:bg-accent/90"
                       : "bg-white/10 hover:bg-white/20 backdrop-blur-sm"
                   )}
                 >
@@ -220,7 +220,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items }) => {
               }}
               className={cn(
                 "w-1.5 h-1.5 rounded-full transition-all",
-                index === currentIndex ? "bg-red-600 w-4" : "bg-white/50"
+                index === currentIndex ? "bg-accent w-4" : "bg-white/50"
               )}
             />
           ))}

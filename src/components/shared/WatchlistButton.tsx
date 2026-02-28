@@ -161,4 +161,4 @@ const WatchlistButton: React.FC<WatchlistButtonProps> = ({
   );
 };
 
-export default WatchlistMenu;
+export default WatchlistButton;

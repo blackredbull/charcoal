@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, ChevronDown, List, Play, Check, StepForward } from 'lucide-react';
+import { X, ChevronDown, ChevronLeft, ChevronRight, List, Play, Check, StepForward } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { getImageUrl } from '../../api/config';
 import { useStore } from '../../store/useStore';
@@ -238,26 +238,6 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
           </button>
         </div>
 
-        {/* Resume Button */}
-        {showResumeButton && currentProgress?.season && currentProgress?.episode && (
-          <button
-            onClick={handleResumeClick}
-            className="mx-4 mt-4 mb-2 px-4 py-3 bg-accent/20 hover:bg-accent/30 text-accent border border-accent/50 hover:border-accent rounded-lg flex items-center justify-center gap-2 transition-all relative font-medium backdrop-blur-sm"
-          >
-            <StepForward className="w-5 h-5" />
-            Resume S{currentProgress.season}:E{currentProgress.episode}
-            {currentProgress.progress && (
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 rounded-b-lg overflow-hidden">
-                <div
-                  className="h-full bg-accent"
-                  style={{
-                    width: `${(currentProgress.progress.watched / currentProgress.progress.duration) * 100}%`
-                  }}
-                />
-              </div>
-            )}
-          </button>
-        )}
 
         {/* Season Selector */}
         <div className="px-4 py-3 border-b border-border-light dark:border-border-dark">
@@ -401,7 +381,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
                     isUpcoming && "opacity-50 cursor-not-allowed"
                   )}
                 >
-                  <div className="w-full aspect-video bg-white/5 rounded-xl overflow-hidden relative flex-shrink-0 shadow-lg group-hover:scale-[1.02] transition-transform">
+                  <div className="w-full aspect-video bg-white/5 rounded-xl overflow-hidden relative flex-shrink-0 shadow-lg transition-all">
                     {episode.still_path ? (
                       <img
                         src={getImageUrl(episode.still_path, 'w500')}
@@ -476,6 +456,39 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
                 </button>
               );
             })}
+          </div>
+        </div>
+
+        {/* Footer with Resume and Navigation */}
+        <div className="p-4 md:p-6 border-t border-border-light dark:border-border-dark bg-light-surface/50 dark:bg-dark-surface/50 flex items-center justify-between gap-3">
+          <div>
+            {showResumeButton && currentProgress?.season && currentProgress?.episode && (
+              <button
+                onClick={handleResumeClick}
+                className="flex items-center justify-center gap-2 py-2.5 px-5 bg-accent hover:bg-accent/90 text-white rounded-xl shadow-lg shadow-accent/20 transition-all text-sm font-bold active:scale-95"
+              >
+                <StepForward className="w-4 h-4" />
+                Resume
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              disabled={isFirstEpisode}
+              onClick={() => onEpisodePrevious?.()}
+              className="flex items-center justify-center gap-2 py-2.5 px-5 bg-light-surface/60 dark:bg-dark-surface/60 hover:bg-light-text-secondary/10 dark:hover:bg-dark-text-secondary/10 disabled:opacity-30 disabled:hover:bg-light-surface/60 dark:disabled:hover:bg-dark-surface/60 text-light-text-primary dark:text-dark-text-primary rounded-xl border border-border-light dark:border-border-dark transition-all text-sm font-bold active:scale-95"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous
+            </button>
+            <button
+              disabled={isLastEpisode}
+              onClick={() => onEpisodeNext?.()}
+              className="flex items-center justify-center gap-2 py-2.5 px-5 bg-accent hover:bg-accent/90 disabled:opacity-30 text-white rounded-xl shadow-lg shadow-accent/20 transition-all text-sm font-bold active:scale-95"
+            >
+              Next Episode
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>

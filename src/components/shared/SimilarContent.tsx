@@ -98,7 +98,7 @@ const SimilarContent: React.FC<SimilarContentProps> = ({
 
   const getMediaUrl = (item: MediaItem) => {
     const type = item.media_type || mediaType;
-    return `/${type === 'tv' ? 'tv' : 'movies'}/${item.id}`;
+    return `/${type === 'tv' ? 'tv' : 'movie'}/${item.id}`;
   };
 
   const getYear = (item: MediaItem) => {
@@ -142,14 +142,17 @@ const SimilarContent: React.FC<SimilarContentProps> = ({
       </AnimatePresence>
       
       {/* Scrollable Container */}
-      <div 
+      <div
         ref={containerRef}
         className="overflow-x-auto scrollbar-none px-2 py-4"
         onMouseDown={startDrag}
         onMouseUp={stopDrag}
         onMouseLeave={stopDrag}
         onMouseMove={onDrag}
-        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        onTouchStart={(e) => startDrag(e as unknown as React.MouseEvent)}
+        onTouchEnd={stopDrag}
+        onTouchMove={(e) => onDrag(e as unknown as React.MouseEvent)}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'pan-y' }}
       >
         <div className="flex gap-6">
           {items.map((item, index) => {
@@ -164,13 +167,13 @@ const SimilarContent: React.FC<SimilarContentProps> = ({
                 transition={{ delay: index * 0.05 }}
                 className={cn(
                   "group flex-shrink-0 w-[180px] flex flex-col gap-3 rounded-2xl transition-all text-left border relative overflow-hidden",
-                  "bg-white/[0.02] border-white/5 hover:bg-white/[0.06] hover:border-white/10"
+                  "bg-white/[0.03] border-white/5 hover:bg-white/[0.08] hover:border-white/10"
                 )}
               >
                 {/* Poster Card */}
                 <Link
                   to={getMediaUrl(item)}
-                  className="relative w-full aspect-[2/3] rounded-xl overflow-hidden flex-shrink-0 shadow-lg group-hover:scale-[1.02] transition-transform cursor-pointer"
+                  className="relative w-full aspect-[2/3] rounded-xl overflow-hidden flex-shrink-0 shadow-lg cursor-pointer"
                 >
                   {item.poster_path ? (
                     <img
@@ -184,43 +187,31 @@ const SimilarContent: React.FC<SimilarContentProps> = ({
                     </div>
                   )}
 
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                  {/* Rating Badge */}
-                  <div className="absolute top-2 right-2">
-                    <div className="flex items-center gap-1 px-2 py-1 bg-white/10 backdrop-blur-md text-white rounded-lg border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                      <span className="text-[10px] font-bold">{item.vote_average.toFixed(1)}</span>
-                    </div>
-                  </div>
-
-                  {/* Year Badge */}
-                  {year && (
-                    <div className="absolute bottom-2 left-2">
-                      <div className="px-2 py-1 bg-white/10 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/20">
-                        {year}
-                      </div>
-                    </div>
-                  )}
+                  {/* Overlay - darker on hover like episode selector */}
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300" />
                 </Link>
 
                 {/* Info Area */}
-                <div className="px-2 pb-2 flex flex-col gap-1.5 min-h-0">
+                <div className="px-2 pb-2 flex flex-col gap-2 min-h-0">
                   <Link
                     to={getMediaUrl(item)}
                     className="font-bold text-sm leading-tight text-white line-clamp-2 hover:text-accent transition-colors"
                   >
                     {itemTitle}
                   </Link>
-                  
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest flex-shrink-0">
-                      {mediaType === 'tv' ? 'TV' : 'Film'}
-                    </span>
-                    <span className="text-[10px] text-white/30">
-                      {item.vote_average > 0 ? '★' : ''}
-                    </span>
+
+                  <div className="flex flex-col gap-1.5">
+                    {year && (
+                      <div className="px-2 py-1 bg-black/40 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10 w-fit">
+                        {year}
+                      </div>
+                    )}
+                    {item.vote_average > 0 && (
+                      <div className="flex items-center gap-1 px-2 py-1 bg-black/40 backdrop-blur-md text-white rounded-lg border border-white/10 w-fit">
+                        <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                        <span className="text-[10px] font-bold">{item.vote_average.toFixed(1)}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
