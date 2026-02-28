@@ -83,7 +83,7 @@ const WatchPage: React.FC = () => {
     .filter(query => query.data)
     .map(query => query.data);
 
-  useWatchTracking({
+  const { reportProgress } = useWatchTracking({
     mediaType,
     id: Number(id),
     title: mediaType === 'movie' ? details?.title : details?.name,
@@ -167,6 +167,7 @@ const WatchPage: React.FC = () => {
             isLastEpisode={isLastEpisode}
             onBack={handleBack}
             onTogglePlayer={() => setUseCustomPlayer(!useCustomPlayer)}
+            onProgress={reportProgress}
           />
         )}
       </div>

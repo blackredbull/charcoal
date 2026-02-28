@@ -123,7 +123,8 @@ const BottomBar: React.FC<BottomBarProps> = ({
             autoNavigate={false}
             showResumeButton={false}
             modalOffset={48}
-            modalWidth="w-[600px]"
+            modalWidth="w-[90%] md:w-[800px] lg:w-[1000px] xl:w-[1200px]"
+            variant="grid"
           />
         )}
       </div>

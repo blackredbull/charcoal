@@ -45,9 +45,17 @@ export const useWatchTracking = ({
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
+  const lastTimeRef = useRef(0);
+
   // Shared progress update handler
   const handleProgressUpdate = (currentTime: number, duration: number) => {
     if (!title || !posterPath) return;
+
+    // Throttle updates to once every 5 seconds, unless it's near completion
+    const now = Date.now();
+    const isNearEnd = (currentTime / duration) >= COMPLETION_THRESHOLD;
+    if (now - lastUpdateRef.current < 5000 && !isNearEnd) return;
+    lastUpdateRef.current = now;
 
     const watched = Math.max(0, Math.min(currentTime, duration));
     const completionRatio = watched / duration;
@@ -146,4 +154,6 @@ export const useWatchTracking = ({
       handleProgressUpdate(progress.timestamp, progress.duration);
     }
   }, []);
+
+  return { reportProgress: handleProgressUpdate };
 };

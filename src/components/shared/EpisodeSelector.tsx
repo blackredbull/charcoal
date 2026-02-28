@@ -41,6 +41,7 @@ interface EpisodeSelectorProps {
   modalOffset?: number;
   modalWidth?: string;
   hideTitle?: boolean;
+  variant?: 'list' | 'grid';
 }
 
 const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
@@ -60,6 +61,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
   modalOffset,
   modalWidth = 'w-[80%]',
   hideTitle = false,
+  variant = 'list',
 }) => {
   const navigate = useNavigate();
   const [internalSelectedSeason, setInternalSelectedSeason] = useState(1);
@@ -140,9 +142,11 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
     return null;
   };
 
-  // Sort episodes by completion status
+  // Sort episodes by completion status if in list mode
   const sortedEpisodes = useMemo(() => {
     if (!currentSeasonData?.episodes) return [];
+
+    if (variant === 'grid') return currentSeasonData.episodes;
 
     return [...currentSeasonData.episodes].sort((a, b) => {
       const progressA = getEpisodeProgress(selectedSeason, a.episode_number);
@@ -277,9 +281,11 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
           </div>
         </div>
 
-        {/* Episodes List */}
-        <div className="flex-1 overflow-y-auto scrollbar-thin p-2">
-          <div className="space-y-2">
+        {/* Episodes List/Grid */}
+        <div className="flex-1 overflow-y-auto scrollbar-thin p-2 md:p-4">
+          <div className={cn(
+            variant === 'list' ? "space-y-2" : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+          )}>
             {sortedEpisodes.map((episode, index) => {
               const duration = formatDuration(episode.runtime);
               const progress = getEpisodeProgress(selectedSeason, episode.episode_number);
@@ -287,80 +293,167 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
                 ? (selectedSeason === Number(currentSeason) && episode.episode_number === Number(currentEpisode))
                 : (resumeInfo?.season === selectedSeason && resumeInfo?.episode === episode.episode_number);
 
+              const airDate = episode.air_date ? new Date(episode.air_date) : null;
+              const isUpcoming = airDate ? airDate > new Date() : false;
+
+              if (variant === 'list') {
+                return (
+                  <button
+                    key={episode.episode_number}
+                    disabled={isUpcoming}
+                    onClick={() => handleEpisodeSelect(selectedSeason, episode.episode_number)}
+                    className={cn(
+                      "w-full px-3 py-3 hover:bg-white/10 flex gap-3 group relative rounded-lg transition-all border",
+                      isCurrent ? "bg-accent/20 border-accent/50" : "bg-white/5 border-white/10 hover:border-white/20",
+                      (progress?.isCompleted || isUpcoming) && "opacity-60"
+                    )}
+                  >
+                    {/* Episode Thumbnail */}
+                    <div className="w-28 aspect-video bg-white/10 flex-shrink-0 rounded-md border border-white/10 overflow-hidden relative">
+                      {episode.still_path ? (
+                        <img
+                          src={getImageUrl(episode.still_path, 'w300')}
+                          alt={episode.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-white/5" />
+                      )}
+                      {duration && (
+                        <span className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 text-white rounded text-xs font-medium border border-white/20">
+                          {duration}
+                        </span>
+                      )}
+                      {isUpcoming && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
+                          <span className="text-[8px] font-bold uppercase tracking-widest text-white/80">Upcoming</span>
+                        </div>
+                      )}
+                      {/* Play Button Overlay */}
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
+                        <div className="w-8 h-8 bg-accent hover:bg-accent/90 rounded flex items-center justify-center transition-all shadow-lg border border-accent/50">
+                          {progress?.isCompleted ? (
+                            <Check className="w-4 h-4 text-white scale-100 group-hover:scale-110 transition-transform" />
+                          ) : (isCurrent || progress?.isWatching) ? (
+                            <StepForward className="w-4 h-4 text-white scale-100 group-hover:scale-110 transition-transform" />
+                          ) : (
+                            <Play className="w-4 h-4 text-white scale-100 group-hover:scale-110 transition-transform" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Episode Info */}
+                    <div className="flex-1 min-w-0 text-left">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={cn(
+                          "font-semibold text-sm",
+                          isCurrent ? "text-accent" : "text-white"
+                        )}>
+                          {index + 1}. {episode.name}
+                        </span>
+                      </div>
+                      <p className="text-xs text-white/60 line-clamp-2 mb-1">
+                        {episode.overview || 'No description available'}
+                      </p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs text-white/40">
+                          {formatAirDate(episode.air_date)}
+                        </span>
+                        {progress?.remainingTime && (
+                          <span className="text-xs text-white/40">
+                            {progress.remainingTime} left
+                          </span>
+                        )}
+                      </div>
+                      {/* Progress Bar */}
+                      {progress && (
+                        <div className="mt-1.5">
+                          <div className="h-0.5 bg-white/10 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-accent transition-all duration-300"
+                              style={{ width: `${Math.min(progress.progress, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                );
+              }
+
+              // Grid variant
               return (
                 <button
                   key={episode.episode_number}
+                  disabled={isUpcoming}
                   onClick={() => handleEpisodeSelect(selectedSeason, episode.episode_number)}
                   className={cn(
-                    "w-full px-3 py-3 hover:bg-white/10 flex gap-3 group relative rounded-lg transition-all border",
-                    isCurrent ? "bg-accent/20 border-accent/50" : "bg-white/5 border-white/10 hover:border-white/20",
-                    progress?.isCompleted && "opacity-60"
+                    "group flex flex-col gap-3 p-3 rounded-2xl transition-all text-left border relative overflow-hidden",
+                    isCurrent
+                      ? "bg-accent/10 border-accent/40 ring-1 ring-accent/20"
+                      : "bg-white/[0.03] border-white/5 hover:bg-white/[0.08] hover:border-white/10",
+                    isUpcoming && "opacity-50 cursor-not-allowed"
                   )}
                 >
-                  {/* Episode Thumbnail */}
-                  <div className="w-28 aspect-video bg-white/10 flex-shrink-0 rounded-md border border-white/10 overflow-hidden relative">
+                  <div className="w-full aspect-video bg-white/5 rounded-xl overflow-hidden relative flex-shrink-0 shadow-lg group-hover:scale-[1.02] transition-transform">
                     {episode.still_path ? (
                       <img
-                        src={getImageUrl(episode.still_path, 'w300')}
+                        src={getImageUrl(episode.still_path, 'w500')}
                         alt={episode.name}
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full bg-white/5" />
-                    )}
-                    {duration && (
-                      <span className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 text-white rounded text-xs font-medium border border-white/20">
-                        {duration}
-                      </span>
-                    )}
-                    {/* Play Button Overlay */}
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
-                      <div className="w-8 h-8 bg-accent hover:bg-accent/90 rounded flex items-center justify-center transition-all shadow-lg border border-accent/50">
-                        {progress?.isCompleted ? (
-                          <Check className="w-4 h-4 text-white scale-100 group-hover:scale-110 transition-transform" />
-                        ) : (isCurrent || progress?.isWatching) ? (
-                          <StepForward className="w-4 h-4 text-white scale-100 group-hover:scale-110 transition-transform" />
-                        ) : (
-                          <Play className="w-4 h-4 text-white scale-100 group-hover:scale-110 transition-transform" />
-                        )}
+                      <div className="w-full h-full flex items-center justify-center text-white/10">
+                        <Play className="w-12 h-12 fill-current" />
                       </div>
-                    </div>
-                  </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
 
-                  {/* Episode Info */}
-                  <div className="flex-1 min-w-0 text-left">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={cn(
-                        "font-semibold text-sm",
-                        isCurrent ? "text-accent" : "text-white"
-                      )}>
-                        {index + 1}. {episode.name}
-                      </span>
-                    </div>
-                    <p className="text-xs text-white/60 line-clamp-2 mb-1">
-                      {episode.overview || 'No description available'}
-                    </p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-white/40">
-                        {formatAirDate(episode.air_date)}
-                      </span>
-                      {progress?.remainingTime && (
-                        <span className="text-xs text-white/40">
-                          {progress.remainingTime} left
-                        </span>
-                      )}
-                    </div>
-                    {/* Progress Bar */}
-                    {progress && (
-                      <div className="mt-1.5">
-                        <div className="h-0.5 bg-white/10 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-accent transition-all duration-300"
-                            style={{ width: `${Math.min(progress.progress, 100)}%` }}
-                          />
+                    {isUpcoming && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                        <div className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-full text-[10px] font-bold uppercase tracking-widest text-white shadow-2xl">
+                          Upcoming
                         </div>
                       </div>
                     )}
+
+                    <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
+                      {duration && (
+                        <div className="px-2 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                          {duration}
+                        </div>
+                      )}
+                    </div>
+
+                    {isCurrent && (
+                      <div className="absolute top-2 left-2 px-2 py-1 bg-accent text-white rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-lg animate-pulse">
+                        Watching
+                      </div>
+                    )}
+
+                    {progress && !isCurrent && (
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10">
+                        <div
+                          className="h-full bg-accent"
+                          style={{ width: `${Math.min(progress.progress, 100)}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex-1 px-1">
+                    <h3 className={cn(
+                      "text-sm font-bold leading-tight line-clamp-1 mb-1",
+                      isCurrent ? "text-accent" : "text-white"
+                    )}>
+                      {episode.episode_number}. {episode.name}
+                    </h3>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">
+                        {formatAirDate(episode.air_date)}
+                      </p>
+                    </div>
                   </div>
                 </button>
               );
