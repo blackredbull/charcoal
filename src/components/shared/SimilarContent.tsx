@@ -206,11 +206,11 @@ const SimilarContent: React.FC<SimilarContentProps> = ({
                   )}
                 </Link>
 
-                {/* Info Area - single line title with ellipsis */}
+                {/* Info Area - single line title with ellipsis, no hover effects */}
                 <div className="px-2 pb-2 flex flex-col gap-1.5 min-h-0">
                   <Link
                     to={getMediaUrl(item)}
-                    className="font-bold text-sm leading-tight text-white line-clamp-1 hover:underline transition-all"
+                    className="font-bold text-sm leading-tight text-white line-clamp-1"
                   >
                     {itemTitle}
                   </Link>
