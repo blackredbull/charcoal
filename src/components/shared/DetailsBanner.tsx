@@ -63,7 +63,7 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
       if (textRef.current) {
         const lineHeight = parseInt(window.getComputedStyle(textRef.current).lineHeight);
         const threeLineHeight = lineHeight * 3;
-        setNeedsExpansion(textRef.current.scrollHeight > threeLineHeight);
+        setNeedsExpansion(textRef.current.scrollHeight > threeLineHeight + 4); // small buffer
       }
     };
 
@@ -74,7 +74,7 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
 
   const formatDuration = (minutes?: number) => {
     if (!minutes) return null;
-    return minutes >= 60 
+    return minutes >= 60
       ? `${Math.floor(minutes / 60)}h ${minutes % 60}m`
       : `${minutes}m`;
   };
@@ -83,17 +83,17 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
     if (type === 'movie') {
       return `/watch/movie/${id}`;
     }
-    
+
     if (resumeInfo?.season && resumeInfo?.episode) {
       return `/watch/tv/${id}?season=${resumeInfo.season}&episode=${resumeInfo.episode}`;
     }
-    
+
     return `/watch/tv/${id}?season=${season || '1'}&episode=${episode || '1'}`;
   };
 
   return (
     <div className="relative w-full rounded-[2rem] overflow-hidden group/banner shadow-2xl">
-      {/* Background with multiple layers for depth */}
+      {/* Background layers */}
       <div className="absolute inset-0">
         <img
           src={getImageUrl(backdropPath, 'original')}
@@ -107,7 +107,7 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
 
       <div className="relative z-10 p-6 md:p-10 lg:p-14">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-end">
-          {/* Poster Section */}
+          {/* Poster */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -121,28 +121,34 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
             />
           </motion.div>
 
-          {/* Content Section */}
+          {/* Content */}
           <div className="flex-1 text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <div className="flex justify-center lg:justify-start items-center gap-3 mb-4">
-                <span className="px-3 py-1 bg-accent/20 backdrop-blur-md text-accent border border-accent/40 rounded-full text-xs font-medium uppercase tracking-widest flex items-center gap-2">
-                  {type === 'movie' ? <Film className="w-3.5 h-3.5" /> : <Tv className="w-3.5 h-3.5" />}
+              {/* Type tag – redesigned */}
+              <div className="flex justify-center lg:justify-start items-center gap-3 mb-5">
+                <div className="relative inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-accent/90 to-accent/70 backdrop-blur-lg text-white rounded-full text-sm font-bold uppercase tracking-wider shadow-lg shadow-accent/30 border border-accent/40">
+                  {type === 'movie' ? (
+                    <Film className="w-4 h-4" />
+                  ) : (
+                    <Tv className="w-4 h-4" />
+                  )}
                   {type === 'movie' ? 'Movie' : 'TV Series'}
-                </span>
+                  <div className="absolute -inset-1 bg-accent/20 rounded-full blur-md -z-10" />
+                </div>
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 text-white tracking-tight leading-none">
                 {title} <span className="text-white/40 font-light">{year}</span>
               </h1>
 
-              {/* Stats Bar */}
+              {/* Stats */}
               <div className="flex flex-wrap justify-center lg:justify-start items-center gap-6 mb-6">
                 <div className="flex items-center gap-2 group/stat">
-                  <div className="p-2 bg-yellow-400/10 dark:bg-yellow-400/10 rounded-lg border border-yellow-400/20 dark:border-yellow-400/20 group-hover/stat:bg-yellow-400/20 transition-colors">
+                  <div className="p-2 bg-yellow-400/10 rounded-lg border border-yellow-400/20 group-hover/stat:bg-yellow-400/20 transition-colors">
                     <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                   </div>
                   <div>
@@ -154,7 +160,7 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
                 {type === 'movie' ? (
                   runtime > 0 && (
                     <div className="flex items-center gap-2 group/stat">
-                      <div className="p-2 bg-blue-400/10 dark:bg-blue-400/10 rounded-lg border border-blue-400/20 dark:border-blue-400/20 group-hover/stat:bg-blue-400/20 transition-colors">
+                      <div className="p-2 bg-blue-400/10 rounded-lg border border-blue-400/20 group-hover/stat:bg-blue-400/20 transition-colors">
                         <Clock className="w-5 h-5 text-blue-400" />
                       </div>
                       <div>
@@ -166,11 +172,13 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
                 ) : (
                   numberOfSeasons && (
                     <div className="flex items-center gap-2 group/stat">
-                      <div className="p-2 bg-accent/10 dark:bg-accent/10 rounded-lg border border-accent/20 dark:border-accent/20 group-hover/stat:bg-accent/20 transition-colors">
+                      <div className="p-2 bg-accent/10 rounded-lg border border-accent/20 group-hover/stat:bg-accent/20 transition-colors">
                         <Layers className="w-5 h-5 text-accent" />
                       </div>
                       <div>
-                        <div className="text-lg font-bold text-white">{numberOfSeasons} {numberOfSeasons === 1 ? 'Season' : 'Seasons'}</div>
+                        <div className="text-lg font-bold text-white">
+                          {numberOfSeasons} {numberOfSeasons === 1 ? 'Season' : 'Seasons'}
+                        </div>
                         <div className="text-[10px] text-white/40 uppercase font-bold tracking-tighter">Content</div>
                       </div>
                     </div>
@@ -178,7 +186,7 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
                 )}
 
                 <div className="flex items-center gap-2 group/stat">
-                  <div className="p-2 bg-green-400/10 dark:bg-green-400/10 rounded-lg border border-green-400/20 dark:border-green-400/20 group-hover/stat:bg-green-400/20 transition-colors">
+                  <div className="p-2 bg-green-400/10 rounded-lg border border-green-400/20 group-hover/stat:bg-green-400/20 transition-colors">
                     <Calendar className="w-5 h-5 text-green-400" />
                   </div>
                   <div>
@@ -200,36 +208,41 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
                 ))}
               </div>
 
-              {/* Overview with Fixed Expansion */}
+              {/* Overview – no layout shift */}
               <div className="relative mb-8 max-w-2xl mx-auto lg:mx-0">
-                <motion.div
-                  initial={false}
-                  animate={{ height: isExpanded ? 'auto' : '4.5em' }}
-                  className="relative overflow-hidden text-sm md:text-base text-white/70 leading-relaxed text-left"
+                <div
+                  className={cn(
+                    "text-sm md:text-base text-white/70 leading-relaxed text-left overflow-hidden transition-all duration-500",
+                    !isExpanded && "max-h-[4.8em]" // ≈3 lines + small buffer
+                  )}
                 >
-                  <p ref={textRef}>
-                    {overview}
-                  </p>
+                  <p ref={textRef}>{overview}</p>
+
                   <AnimatePresence>
-                    {needsExpansion && !isExpanded && (
+                    {!isExpanded && needsExpansion && (
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-black to-transparent"
+                        className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-black to-transparent pointer-events-none"
                       />
                     )}
                   </AnimatePresence>
-                </motion.div>
+                </div>
+
                 {needsExpansion && (
                   <button
                     onClick={() => setIsExpanded(!isExpanded)}
-                    className="flex items-center gap-1.5 text-accent hover:text-accent/80 text-sm font-bold uppercase tracking-widest mt-2 transition-colors group/read"
+                    className="flex items-center gap-1.5 text-accent hover:text-accent/80 text-sm font-bold uppercase tracking-widest mt-3 transition-colors group/read"
                   >
                     {isExpanded ? (
-                      <>Show Less <ChevronUp className="w-4 h-4 group-hover/read:-translate-y-0.5 transition-transform" /></>
+                      <>
+                        Show Less <ChevronUp className="w-4 h-4 group-hover/read:-translate-y-0.5 transition-transform" />
+                      </>
                     ) : (
-                      <>Read More <ChevronDown className="w-4 h-4 group-hover/read:translate-y-0.5 transition-transform" /></>
+                      <>
+                        Read More <ChevronDown className="w-4 h-4 group-hover/read:translate-y-0.5 transition-transform" />
+                      </>
                     )}
                   </button>
                 )}
@@ -286,10 +299,12 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
                         : "bg-white/5 border-white/10 text-white hover:bg-white/10"
                     )}
                   >
-                    <Bookmark className={cn(
-                      "w-6 h-6 transition-transform",
-                      watchlistItem ? "fill-current" : ""
-                    )} />
+                    <Bookmark
+                      className={cn(
+                        "w-6 h-6 transition-transform",
+                        watchlistItem ? "fill-current" : ""
+                      )}
+                    />
                   </button>
 
                   <WatchlistMenu
