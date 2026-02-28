@@ -320,8 +320,13 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
                         <div className="w-full h-full bg-white/5" />
                       )}
                       {duration && (
-                        <span className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 text-white rounded text-xs font-medium border border-white/20">
+                        <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black/80 text-white rounded text-xs font-medium border border-white/20">
                           {duration}
+                        </span>
+                      )}
+                      {progress?.remainingTime && !progress.isCompleted && (
+                        <span className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-accent/80 text-white rounded text-xs font-medium border border-accent/20">
+                          {progress.remainingTime} left
                         </span>
                       )}
                       {isUpcoming && (
@@ -418,12 +423,25 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
                       </div>
                     )}
 
-                    <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
+                    <div className="absolute bottom-2 left-2">
                       {duration && (
                         <div className="px-2 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
                           {duration}
                         </div>
                       )}
+                    </div>
+
+                    <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
+                      {progress?.isCompleted ? (
+                        <div className="px-2 py-1 bg-green-500/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                          <Check className="w-3 h-3" />
+                          Watched
+                        </div>
+                      ) : (progress?.remainingTime && (
+                        <div className="px-2 py-1 bg-accent/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                          {progress.remainingTime} left
+                        </div>
+                      ))}
                     </div>
 
                     {isCurrent && (

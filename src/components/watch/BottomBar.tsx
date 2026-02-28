@@ -65,7 +65,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
     )}>
       <button
         onClick={onBack}
-        className="h-10 px-3 md:px-4 bg-white/5 hover:bg-white/10 text-white rounded-xl flex items-center gap-2 transition-all duration-200 border border-white/10 hover:border-white/20 flex-shrink-0 active:scale-95"
+        className="h-10 px-3 md:px-4 bg-white/5 hover:bg-white/10 text-white rounded-xl flex items-center justify-center gap-2 transition-all duration-200 border border-white/10 hover:border-white/20 flex-shrink-0 active:scale-95"
       >
         <ArrowLeft className="w-4 h-4" />
         <span className="font-bold text-sm hidden md:inline">Back</span>
