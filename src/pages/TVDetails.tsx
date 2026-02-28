@@ -133,7 +133,7 @@ const TVDetails = () => {
         </motion.div>
       )}
 
-      {/* Modern Episode Selector Modal */}
+      {/* Modern Episode Selector Modal – aligned with VideoPlayer style */}
       {isEpisodeSelectorOpen && seasons && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center animate-in fade-in zoom-in duration-300"
@@ -201,7 +201,7 @@ const TVDetails = () => {
                   const isCompleted = historyItem?.isCompleted;
 
                   const isCurrentEpisode =
-                    Number(season) === selectedSeason && Number(episode.episode_number) === Number(episode.episode_number);
+                    Number(season) === selectedSeason && Number(episode.episode_number) === Number(episode);
 
                   return (
                     <button
@@ -302,8 +302,9 @@ const TVDetails = () => {
               </div>
             </div>
 
-            {/* Bottom controls section */}
+            {/* Bottom controls section – like in VideoPlayer */}
             <div className="p-4 md:p-6 border-t border-white/10 bg-white/5 flex items-center justify-end gap-3">
+              {/* Resume button – styled like Next Episode from VideoPlayer */}
               {resumeInfo && !resumeInfo.isCompleted && (
                 <button
                   onClick={() => {
