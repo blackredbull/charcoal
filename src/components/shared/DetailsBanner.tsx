@@ -124,7 +124,7 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 text-white tracking-tight leading-none">
-                {title} <span className="text-white/40 font-light">{year}</span>
+                {title}
               </h1>
 
               {/* Stats */}
@@ -190,7 +190,7 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
                 ))}
               </div>
 
-              {/* Overview – fixed height + ellipsis, now 3 lines instead of 4 */}
+              {/* Overview – fixed height + ellipsis, 4 lines */}
               <div className="mb-8 max-w-2xl mx-auto lg:mx-0">
                 <p
                   className="text-sm md:text-base text-white/70 leading-relaxed text-left line-clamp-4"
