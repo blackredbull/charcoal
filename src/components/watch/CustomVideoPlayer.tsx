@@ -39,6 +39,7 @@ interface VideoPlayerProps {
   isLastEpisode?: boolean;
   onBack?: () => void;
   onTogglePlayer?: () => void;
+  onProgress?: (currentTime: number, duration: number) => void;
 }
 
 const formatQuality = (quality: string): string => {
@@ -46,7 +47,7 @@ const formatQuality = (quality: string): string => {
   const lower = quality.toLowerCase();
 
   if (lower === 'unknown' || lower === '') return 'SD';
-  if (lower.includes('up to hd') || (lower.includes('hd') && !lower.match(/\d/))) return 'HD';
+  if (lower.includes('up to hd') || lower === 'hd' || (lower.includes('hd') && !lower.match(/\d/))) return 'HD';
 
   const cleanQuality = lower.replace(/[^0-9]/g, '');
 
@@ -78,7 +79,28 @@ const QualitySelector = ({
       if (!groups[q]) groups[q] = [];
       groups[q].push(src);
     });
-    return groups;
+
+    // Custom sorting order as requested: HD, 1080p, and then descending quality
+    const sortOrder = ['HD', '1080p', '4K', '2K', '720p', '480p', '360p', 'SD'];
+
+    return Object.keys(groups)
+      .sort((a, b) => {
+        const indexA = sortOrder.indexOf(a);
+        const indexB = sortOrder.indexOf(b);
+
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+
+        // Default to numeric comparison for unknown qualities
+        const valA = parseInt(a) || 0;
+        const valB = parseInt(b) || 0;
+        return valB - valA;
+      })
+      .reduce((acc, key) => {
+        acc[key] = groups[key];
+        return acc;
+      }, {} as Record<string, BackendSource[]>);
   }, [sources]);
 
   return (
@@ -177,19 +199,23 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   onBack,
   onTogglePlayer,
   onEpisodeNext,
-  onEpisodePrevious
+  onEpisodePrevious,
+  onProgress
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   
-  // Set default quality to 1080p if available
+  // Set default quality to 1080p, then fallback to HD if available
   const initialSource = useMemo(() => {
     const s1080 = apiResponse.sources.find(s => formatQuality(s.quality) === '1080p');
-    return s1080 || apiResponse.sources[0] || null;
+    if (s1080) return s1080;
+    const sHD = apiResponse.sources.find(s => formatQuality(s.quality) === 'HD');
+    return sHD || apiResponse.sources[0] || null;
   }, [apiResponse.sources]);
 
   const [currentSource, setCurrentSource] = useState<BackendSource | null>(initialSource);
+  const [triedSources, setTriedSources] = useState<Set<string>>(new Set());
   const [currentSubtitle, setCurrentSubtitle] = useState<BackendSubtitle | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -247,7 +273,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     const handleTimeUpdate = () => {
       if (video.duration && !isNaN(video.duration)) {
-        setProgress((video.currentTime / video.duration) * 100);
+        const currentProgress = (video.currentTime / video.duration) * 100;
+        setProgress(currentProgress);
+        onProgress?.(video.currentTime, video.duration);
       }
     };
 
@@ -262,6 +290,22 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const handleWaiting = () => setIsLoading(true);
     const handlePlaying = () => setIsLoading(false);
     const handleCanPlay = () => setIsLoading(false);
+    const handleError = () => {
+      console.error('Video Player Error');
+      if (currentSource) {
+        setTriedSources(prev => new Set(prev).add(currentSource.url));
+
+        // Find next best source
+        const remainingSources = apiResponse.sources.filter(s => !triedSources.has(s.url) && s.url !== currentSource.url);
+        if (remainingSources.length > 0) {
+          // Priority: HD, 1080p, others
+          const sHD = remainingSources.find(s => formatQuality(s.quality) === 'HD');
+          const s1080 = remainingSources.find(s => formatQuality(s.quality) === '1080p');
+          setCurrentSource(sHD || s1080 || remainingSources[0]);
+        }
+      }
+      setIsLoading(false);
+    };
 
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('durationchange', handleDurationChange);
@@ -270,6 +314,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     video.addEventListener('waiting', handleWaiting);
     video.addEventListener('playing', handlePlaying);
     video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('error', handleError);
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
@@ -279,8 +324,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       video.removeEventListener('waiting', handleWaiting);
       video.removeEventListener('playing', handlePlaying);
       video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('error', handleError);
     };
-  }, [currentSource]);
+  }, [currentSource, apiResponse.sources, triedSources]);
 
   const togglePlay = useCallback((e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -410,7 +456,26 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             )}
             {showTitle && (
               <div className="flex flex-col">
-                <h1 className="text-white text-lg md:text-2xl font-bold tracking-tight">{showTitle}</h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-white text-lg md:text-2xl font-bold tracking-tight">{showTitle}</h1>
+                  {!isMovie && seasons && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowEpisodeSelector(!showEpisodeSelector);
+                        setShowQuality(false);
+                        setShowSubtitles(false);
+                      }}
+                      className={cn(
+                        "px-3 py-1 bg-white/5 hover:bg-white/10 text-accent rounded-lg border border-accent/20 hover:border-accent/40 transition-all backdrop-blur-md text-xs font-bold flex items-center gap-2 active:scale-95",
+                        showEpisodeSelector && "bg-accent/20 border-accent/50 text-white"
+                      )}
+                    >
+                      <List className="w-3.5 h-3.5" />
+                      <span>Episodes</span>
+                    </button>
+                  )}
+                </div>
                 {!isMovie && seasonNumber && episodeNumber && (
                   <p className="text-white/50 text-sm md:text-base font-medium">
                     Season {seasonNumber}, Episode {episodeNumber} {episodeTitle && <span className="text-white/30 ml-1">· {episodeTitle}</span>}
@@ -471,82 +536,110 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar space-y-4">
-              {currentSeasonData?.episodes.map((episode: any) => (
-                <button
-                  key={episode.episode_number}
-                  onClick={() => {
-                    onEpisodeSelect?.(selectedSeason, episode.episode_number);
-                    setShowEpisodeSelector(false);
-                  }}
-                  className={cn(
-                    "w-full group flex flex-col md:flex-row gap-6 p-4 rounded-2xl transition-all text-left border relative overflow-hidden",
-                    episodeNumber === episode.episode_number && seasonNumber === selectedSeason
-                      ? "bg-accent/10 border-accent/40 ring-1 ring-accent/20"
-                      : "bg-white/[0.03] border-white/5 hover:bg-white/[0.08] hover:border-white/10"
-                  )}
-                >
-                  <div className="w-full md:w-64 aspect-video bg-white/5 rounded-xl overflow-hidden relative flex-shrink-0 shadow-lg group-hover:scale-[1.02] transition-transform">
-                    {episode.still_path ? (
-                      <img
-                        src={`https://image.tmdb.org/t/p/w500${episode.still_path}`}
-                        alt={episode.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-white/10">
-                        <Play className="w-12 h-12 fill-current" />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                    {episode.runtime && (
-                      <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                        {episode.runtime}m
-                      </div>
-                    )}
-                    {episodeNumber === episode.episode_number && seasonNumber === selectedSeason && (
-                      <div className="absolute top-2 left-2 px-2 py-1 bg-accent text-white rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-lg">
-                        Watching
-                      </div>
-                    )}
-                  </div>
+            <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {currentSeasonData?.episodes.map((episode: any) => {
+                  const airDate = episode.air_date ? new Date(episode.air_date) : null;
+                  const isUpcoming = airDate ? airDate > new Date() : false;
+                  const formattedDate = airDate ? airDate.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: airDate.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined,
+                  }) : 'TBA';
 
-                  <div className="flex-1 py-1 space-y-2">
-                    <div className="flex items-center justify-between gap-4">
-                       <h3 className={cn(
-                        "text-lg font-bold leading-tight line-clamp-1",
+                  return (
+                    <button
+                      key={episode.episode_number}
+                      disabled={isUpcoming}
+                      onClick={() => {
+                        onEpisodeSelect?.(selectedSeason, episode.episode_number);
+                        setShowEpisodeSelector(false);
+                      }}
+                      className={cn(
+                        "group flex flex-col gap-3 p-3 rounded-2xl transition-all text-left border relative overflow-hidden",
                         episodeNumber === episode.episode_number && seasonNumber === selectedSeason
-                          ? "text-accent"
-                          : "text-white"
-                      )}>
-                        {episode.episode_number}. {episode.name}
-                      </h3>
-                    </div>
-                    
-                    <p className="text-white/50 text-sm line-clamp-3 leading-relaxed font-medium">
-                      {episode.overview || "No description available for this episode."}
-                    </p>
-                  </div>
-                </button>
-              ))}
+                          ? "bg-accent/10 border-accent/40 ring-1 ring-accent/20"
+                          : "bg-white/[0.03] border-white/5 hover:bg-white/[0.08] hover:border-white/10",
+                        isUpcoming && "opacity-50 cursor-not-allowed"
+                      )}
+                    >
+                      <div className="w-full aspect-video bg-white/5 rounded-xl overflow-hidden relative flex-shrink-0 shadow-lg group-hover:scale-[1.02] transition-transform">
+                        {episode.still_path ? (
+                          <img
+                            src={`https://image.tmdb.org/t/p/w500${episode.still_path}`}
+                            alt={episode.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-white/10">
+                            <Play className="w-12 h-12 fill-current" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+
+                        {isUpcoming && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                            <div className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-full text-[10px] font-bold uppercase tracking-widest text-white shadow-2xl">
+                              Upcoming
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
+                          {episode.runtime && (
+                            <div className="px-2 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                              {episode.runtime}m
+                            </div>
+                          )}
+                        </div>
+
+                        {episodeNumber === episode.episode_number && seasonNumber === selectedSeason && (
+                          <div className="absolute top-2 left-2 px-2 py-1 bg-accent text-white rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-lg animate-pulse">
+                            Watching
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex-1 px-1">
+                        <h3 className={cn(
+                          "text-sm font-bold leading-tight line-clamp-1 mb-1",
+                          episodeNumber === episode.episode_number && seasonNumber === selectedSeason
+                            ? "text-accent"
+                            : "text-white"
+                        )}>
+                          {episode.episode_number}. {episode.name}
+                        </h3>
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">
+                            {formattedDate}
+                          </p>
+                        </div>
+                        <p className="text-[11px] text-white/50 line-clamp-2 mt-2 leading-relaxed">
+                          {episode.overview || "No description available for this episode."}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             
-            <div className="p-6 border-t border-white/10 bg-white/5 flex items-center justify-between gap-4">
+            <div className="p-4 md:p-6 border-t border-white/10 bg-white/5 flex items-center justify-end gap-3">
                 <button
                   disabled={isFirstEpisode}
                   onClick={() => onEpisodePrevious?.()}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 px-6 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-white rounded-2xl border border-white/10 transition-all font-bold active:scale-95"
+                  className="flex items-center justify-center gap-2 py-2.5 px-5 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-white rounded-xl border border-white/10 transition-all text-sm font-bold active:scale-95"
                 >
-                  <ChevronLeft className="w-5 h-5" />
-                  Previous Episode
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
                 </button>
                 <button
                   disabled={isLastEpisode}
                   onClick={() => onEpisodeNext?.()}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 px-6 bg-accent hover:bg-accent/90 disabled:opacity-30 text-white rounded-2xl shadow-xl shadow-accent/20 transition-all font-bold active:scale-95"
+                  className="flex items-center justify-center gap-2 py-2.5 px-5 bg-accent hover:bg-accent/90 disabled:opacity-30 text-white rounded-xl shadow-lg shadow-accent/20 transition-all text-sm font-bold active:scale-95"
                 >
                   Next Episode
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="w-4 h-4" />
                 </button>
             </div>
           </div>
@@ -647,25 +740,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </div>
 
             <div className="flex items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
-              {!isMovie && seasons && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowEpisodeSelector(!showEpisodeSelector);
-                    setShowQuality(false);
-                    setShowSubtitles(false);
-                  }}
-                  className={cn(
-                    "px-4 py-2.5 rounded-xl transition-all flex items-center gap-2.5 active:scale-95 group",
-                    showEpisodeSelector ? "bg-accent text-white" : "text-white/70 hover:text-white hover:bg-white/5"
-                  )}
-                  title="Episodes"
-                >
-                  <List className="w-5 h-5" />
-                  <span className="hidden sm:inline font-bold text-sm">Episodes</span>
-                </button>
-              )}
-
               <div className="relative">
                 <button
                   onClick={(e) => {
