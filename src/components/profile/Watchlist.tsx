@@ -70,7 +70,7 @@ const Watchlist: React.FC<WatchlistProps> = ({
           <Bookmark className="w-5 h-5" />
           Watchlist
         </h2>
-        <span className="text-sm text-light-text-secondary dark:text-dark-text-secondary">
+        <span className="text-sm text-dark-text-secondary">
           {watchlist.length} items
         </span>
       </div>
@@ -85,7 +85,7 @@ const Watchlist: React.FC<WatchlistProps> = ({
               "px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5 rounded-full",
               activeFilters.has(filter.id)
                 ? "bg-red-600 text-white"
-                : "bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary hover:bg-light-text-secondary/10 dark:hover:bg-dark-text-secondary/10"
+                : "bg-dark-surface text-dark-text-primary hover:bg-dark-text-secondary/10"
             )}
           >
             {filter.type === 'mediaType' ? (
@@ -99,16 +99,16 @@ const Watchlist: React.FC<WatchlistProps> = ({
       </div>
 
       {watchlist.length === 0 ? (
-        <div className="text-center py-12 bg-light-surface dark:bg-dark-surface rounded-lg">
-          <Bookmark className="w-12 h-12 text-light-text-secondary dark:text-dark-text-secondary mx-auto mb-3" />
-          <p className="text-light-text-primary dark:text-dark-text-primary">Your watchlist is empty</p>
-          <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mt-1">
+        <div className="text-center py-12 bg-dark-surface rounded-lg">
+          <Bookmark className="w-12 h-12 text-dark-text-secondary mx-auto mb-3" />
+          <p className="text-dark-text-primary">Your watchlist is empty</p>
+          <p className="text-sm text-dark-text-secondary mt-1">
             Add movies and TV shows to your watchlist to keep track of what you want to watch
           </p>
         </div>
       ) : filteredWatchlist.length === 0 ? (
-        <div className="text-center py-12 bg-light-surface dark:bg-dark-surface rounded-lg">
-          <p className="text-light-text-secondary dark:text-dark-text-secondary">
+        <div className="text-center py-12 bg-dark-surface rounded-lg">
+          <p className="text-dark-text-secondary">
             No items match your filters
           </p>
         </div>
@@ -120,7 +120,7 @@ const Watchlist: React.FC<WatchlistProps> = ({
               to={`/${item.mediaType}/${item.id}`}
               className="group relative"
             >
-              <div className="relative overflow-hidden border border-border-light dark:border-border-dark hover:border-accent transition-colors">
+              <div className="relative overflow-hidden border-border-dark hover:border-accent transition-colors">
                 <div className="aspect-[2/3]">
                   <img
                     src={getImageUrl(item.posterPath, 'w500')}

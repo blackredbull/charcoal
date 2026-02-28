@@ -24,9 +24,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, isLoading }) => 
 
   if (results.length === 0) {
     return (
-      <div className="text-center py-12 bg-light-surface dark:bg-dark-surface rounded-lg">
-        <p className="text-light-text-primary dark:text-dark-text-primary">No results found</p>
-        <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mt-1">
+      <div className="text-center py-12 bg-dark-surface rounded-lg">
+        <p className="text-dark-text-primary">No results found</p>
+        <p className="text-sm text-dark-text-secondary mt-1">
           Try adjusting your search or filters
         </p>
       </div>

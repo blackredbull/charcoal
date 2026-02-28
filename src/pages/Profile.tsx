@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { UserCircle, Moon, Sun } from 'lucide-react';
+import { UserCircle } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import ContinueWatching from '../components/profile/ContinueWatching';
 import Watchlist from '../components/profile/Watchlist';
@@ -13,8 +13,6 @@ const Profile = () => {
     removeFromWatchHistory,
     watchlist,
     removeFromWatchlist,
-    darkMode,
-    toggleDarkMode,
   } = useStore();
 
   // Handle section highlighting
@@ -49,17 +47,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleDarkMode}
-          className="p-2 hover:bg-light-surface dark:hover:bg-dark-surface rounded transition-colors"
-        >
-          {darkMode ? (
-            <Sun className="w-6 h-6" />
-          ) : (
-            <Moon className="w-6 h-6" />
-          )}
-        </button>
       </div>
 
       {/* History Section */}

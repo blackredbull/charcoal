@@ -32,7 +32,7 @@ const WatchlistMenu: React.FC<WatchlistMenuProps> = ({
       
       <div 
         className={cn(
-          "absolute z-50 w-40 bg-white dark:bg-dark-surface rounded-lg shadow-lg border border-border-light dark:border-border-dark overflow-hidden",
+          "absolute z-50 w-40 bg-dark-surface rounded-lg shadow-lg border border-border-dark overflow-hidden",
           position === 'top-right' && "right-0 bottom-full mb-1",
           position === 'top-left' && "left-0 bottom-full mb-1"
         )}
@@ -42,28 +42,28 @@ const WatchlistMenu: React.FC<WatchlistMenuProps> = ({
           <div className="py-1">
             <button
               onClick={() => onAdd('watching')}
-              className="w-full px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-dark-bg flex items-center gap-2 group transition-colors"
+              className="w-full px-3 py-2 text-left hover:bg-dark-bg flex items-center gap-2 group transition-colors"
             >
               <div className="w-2 h-2 rounded-full bg-blue-500" />
               <span className="text-sm">Currently Watching</span>
             </button>
             <button
               onClick={() => onAdd('planned')}
-              className="w-full px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-dark-bg flex items-center gap-2 group transition-colors"
+              className="w-full px-3 py-2 text-left hover:bg-dark-bg flex items-center gap-2 group transition-colors"
             >
               <div className="w-2 h-2 rounded-full bg-purple-500" />
               <span className="text-sm">Plan to Watch</span>
             </button>
             <button
               onClick={() => onAdd('completed')}
-              className="w-full px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-dark-bg flex items-center gap-2 group transition-colors"
+              className="w-full px-3 py-2 text-left hover:bg-dark-bg flex items-center gap-2 group transition-colors"
             >
               <div className="w-2 h-2 rounded-full bg-green-500" />
               <span className="text-sm">Completed</span>
             </button>
           </div>
         ) : (
-          <div className="divide-y divide-border-light dark:divide-border-dark">
+          <div className="divide-y divide-border-dark">
             <div className="px-3 py-2">
               <div className="flex items-center gap-2">
                 <div className={cn(
@@ -85,7 +85,7 @@ const WatchlistMenu: React.FC<WatchlistMenuProps> = ({
                 onClick={() => onAdd('watching')}
                 className={cn(
                   "w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors",
-                  currentStatus === 'watching' ? "text-blue-600 dark:text-blue-500 font-medium" : "text-light-text-primary dark:text-dark-text-primary"
+                  currentStatus === 'watching' ? "text-blue-500 font-medium" : "text-dark-text-primary"
                 )}
               >
                 Set as Watching
@@ -94,7 +94,7 @@ const WatchlistMenu: React.FC<WatchlistMenuProps> = ({
                 onClick={() => onAdd('planned')}
                 className={cn(
                   "w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors",
-                  currentStatus === 'planned' ? "text-purple-600 dark:text-purple-500 font-medium" : "text-light-text-primary dark:text-dark-text-primary"
+                  currentStatus === 'planned' ? "text-purple-500 font-medium" : "text-dark-text-primary"
                 )}
               >
                 Set as Plan to Watch
@@ -103,7 +103,7 @@ const WatchlistMenu: React.FC<WatchlistMenuProps> = ({
                 onClick={() => onAdd('completed')}
                 className={cn(
                   "w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors",
-                  currentStatus === 'completed' ? "text-green-600 dark:text-green-500 font-medium" : "text-light-text-primary dark:text-dark-text-primary"
+                  currentStatus === 'completed' ? "text-green-500 font-medium" : "text-dark-text-primary"
                 )}
               >
                 Set as Completed
@@ -113,7 +113,7 @@ const WatchlistMenu: React.FC<WatchlistMenuProps> = ({
             <div className="py-1">
               <button
                 onClick={onRemove}
-                className="w-full px-3 py-2 text-left text-sm text-red-600 dark:text-red-500 hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors"
+                className="w-full px-3 py-2 text-left text-sm text-red-500 hover:bg-dark-bg transition-colors"
               >
                 Remove from Watchlist
               </button>

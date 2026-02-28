@@ -45,7 +45,7 @@ const Search = () => {
         </h1>
         <button
           onClick={() => setIsFiltersOpen(true)}
-          className="hidden md:flex items-center gap-2 px-4 py-2 bg-light-surface dark:bg-dark-surface rounded-lg hover:bg-light-text-secondary/10 dark:hover:bg-dark-text-secondary/10 transition-colors"
+          className="hidden md:flex items-center gap-2 px-4 py-2 bg-dark-surface rounded-lg hover:bg-dark-text-secondary/10 transition-colors"
         >
           <Filter className="w-4 h-4" />
           <span className="text-sm font-medium">Filters</span>

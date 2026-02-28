@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from './components/layout/Layout';
@@ -11,8 +11,6 @@ import TVDetails from './pages/TVDetails';
 import WatchPage from './pages/WatchPage';
 import Profile from './pages/Profile';
 import ScrollToTop from './components/layout/ScrollToTop';
-import { useStore } from './store/useStore';
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -27,16 +25,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const { darkMode } = useStore();
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
-
   return (
     <QueryClientProvider client={queryClient}>
       <Router>

@@ -42,8 +42,6 @@ interface SearchStore {
   removeFromWatchlist: (id: number, mediaType: 'movie' | 'tv') => void;
   updateWatchlistStatus: (id: number, mediaType: 'movie' | 'tv', status: WatchStatus) => void;
   getWatchlistItem: (id: number, mediaType: 'movie' | 'tv') => WatchlistItem | undefined;
-  darkMode: boolean;
-  toggleDarkMode: () => void;
 }
 
 const RECENT_WATCH_THRESHOLD = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
@@ -131,8 +129,6 @@ export const useStore = create<SearchStore>()(
           (item) => item.id === id && item.mediaType === mediaType
         );
       },
-      darkMode: false,
-      toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
     }),
     {
       name: 'watch-history',

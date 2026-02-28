@@ -82,14 +82,14 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
   if (items.length === 0) return null;
 
   return (
-    <div className="h-full flex flex-col bg-light-bg dark:bg-dark-bg border-2 border-gray-400/50 dark:border-white/20 rounded-2xl overflow-hidden">
-      <div className="p-3 border-b border-border-light dark:border-border-dark flex items-center justify-between">
+    <div className="h-full flex flex-col bg-dark-bg border-2 border-white/20 rounded-2xl overflow-hidden">
+      <div className="p-3 border-b border-border-dark flex items-center justify-between">
         <h2 className="text-xl font-semibold">Continue Watching</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={() => scroll('left')}
             className={cn(
-              "w-8 h-8 flex items-center justify-center hover:bg-light-surface dark:hover:bg-dark-surface rounded-full transition-colors border border-border-light dark:border-border-dark",
+              "w-8 h-8 flex items-center justify-center hover:bg-dark-surface rounded-full transition-colors border-border-dark",
               !canScrollLeft && "opacity-50 cursor-not-allowed"
             )}
             disabled={!canScrollLeft}
@@ -133,7 +133,7 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
                   }`}
                   className="flex-shrink-0 w-[75vw] sm:w-[400px] lg:w-[450px] relative"
                 >
-                  <div className="relative border border-border-light dark:border-border-dark rounded-lg overflow-hidden hover:border-red-500/50 transition-all duration-200 group">
+                  <div className="relative border-border-dark rounded-lg overflow-hidden hover:border-red-500/50 transition-all duration-200 group">
                     <div className="aspect-video relative">
                       <img
                         src={getImageUrl(

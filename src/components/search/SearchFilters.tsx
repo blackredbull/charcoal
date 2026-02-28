@@ -118,7 +118,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       {/* Mobile bottom sheet */}
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 bg-light-bg dark:bg-dark-bg rounded-t-2xl transition-transform duration-300 h-[85vh] md:hidden",
+          "fixed inset-x-0 bottom-0 z-50 bg-dark-bg rounded-t-2xl transition-transform duration-300 h-[85vh] md:hidden",
           isOpen ? "translate-y-0" : "translate-y-full"
         )}
       >
@@ -145,7 +145,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       {/* Desktop side panel */}
       <div
         className={cn(
-          "fixed top-0 right-0 bottom-0 z-50 w-[400px] bg-light-bg dark:bg-dark-bg shadow-lg transition-transform duration-300 hidden md:block",
+          "fixed top-0 right-0 bottom-0 z-50 w-[400px] bg-dark-bg shadow-lg transition-transform duration-300 hidden md:block",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -210,7 +210,7 @@ const FilterContent: React.FC<{
 }) => (
   <div className="h-full flex flex-col">
     {/* Header */}
-    <div className="p-4 border-b border-border-light dark:border-border-dark flex items-center justify-between">
+    <div className="p-4 border-b border-border-dark flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Filter className="w-5 h-5" />
         <h2 className="text-lg font-semibold">Filters</h2>
@@ -224,7 +224,7 @@ const FilterContent: React.FC<{
         </button>
         <button
           onClick={onClose}
-          className="p-1.5 hover:bg-light-surface dark:hover:bg-dark-surface rounded-full"
+          className="p-1.5 hover:bg-dark-surface rounded-full"
         >
           <X className="w-5 h-5" />
         </button>
@@ -232,8 +232,8 @@ const FilterContent: React.FC<{
     </div>
 
     {/* Results Count */}
-    <div className="px-4 py-3 border-b border-border-light dark:border-border-dark bg-light-surface dark:bg-dark-surface">
-      <div className="text-sm text-light-text-secondary dark:text-dark-text-secondary">
+    <div className="px-4 py-3 border-b border-border-dark bg-dark-surface">
+      <div className="text-sm text-dark-text-secondary">
         {totalResults.toLocaleString()} results found
       </div>
     </div>
@@ -253,7 +253,7 @@ const FilterContent: React.FC<{
                   "px-3 py-1.5 text-sm rounded-full transition-colors",
                   selectedYears.has(yearOption.label)
                     ? "bg-red-600 text-white"
-                    : "bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary hover:bg-light-text-secondary/10 dark:hover:bg-dark-text-secondary/10"
+                    : "bg-dark-surface text-dark-text-primary hover:bg-dark-text-secondary/10"
                 )}
               >
                 {yearOption.label}
@@ -268,11 +268,11 @@ const FilterContent: React.FC<{
               value={customYear}
               onChange={(e) => setCustomYear(e.target.value)}
               placeholder="Enter year..."
-              className="w-full px-3 py-1.5 pr-9 text-sm bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-3 py-1.5 pr-9 text-sm bg-dark-surface text-dark-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             <button
               type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-light-text-secondary dark:text-dark-text-secondary hover:text-red-600 dark:hover:text-red-500 transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-dark-text-secondary hover:text-red-600 transition-colors"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -291,7 +291,7 @@ const FilterContent: React.FC<{
                   "px-3 py-1.5 text-sm rounded-full transition-colors",
                   selectedGenres.includes(genre.id)
                     ? "bg-red-600 text-white"
-                    : "bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary hover:bg-light-text-secondary/10 dark:hover:bg-dark-text-secondary/10"
+                    : "bg-dark-surface text-dark-text-primary hover:bg-dark-text-secondary/10"
                 )}
               >
                 {genre.name}
@@ -305,23 +305,23 @@ const FilterContent: React.FC<{
           <h3 className="text-sm font-semibold mb-3">Minimum Rating</h3>
           <div className="space-y-4">
             <div 
-              className="relative w-full h-2 bg-light-surface dark:bg-dark-surface rounded-full overflow-hidden cursor-pointer"
+              className="relative w-full h-2 bg-dark-surface rounded-full overflow-hidden cursor-pointer"
               onMouseDown={() => setIsDragging(true)}
               onMouseUp={() => setIsDragging(false)}
               onMouseLeave={() => setIsDragging(false)}
               onMouseMove={handleRatingSliderChange}
             >
               <div
-                className="absolute inset-y-0 left-0 bg-red-600 dark:bg-red-500 transition-all"
+                className="absolute inset-y-0 left-0 bg-red-500 transition-all"
                 style={{ width: `${(minRating / 9) * 100}%` }}
               />
               <div 
-                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-red-600 dark:bg-red-500 rounded-full shadow-lg transform -translate-x-1/2 cursor-grab"
+                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full shadow-lg transform -translate-x-1/2 cursor-grab"
                 style={{ left: `${(minRating / 9) * 100}%` }}
               />
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-light-text-secondary dark:text-dark-text-secondary">Any Rating</span>
+              <span className="text-dark-text-secondary">Any Rating</span>
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                 <span className="font-medium">

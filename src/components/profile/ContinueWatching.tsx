@@ -88,9 +88,9 @@ const ContinueWatching: React.FC<ContinueWatchingProps> = ({
       </div>
 
       {watchHistory.length === 0 ? (
-        <div className="text-center py-12 bg-light-surface dark:bg-dark-surface rounded-lg">
-          <Clock className="w-12 h-12 text-light-text-secondary dark:text-dark-text-secondary mx-auto mb-3" />
-          <p className="text-light-text-secondary dark:text-dark-text-secondary">
+        <div className="text-center py-12 bg-dark-surface rounded-lg">
+          <Clock className="w-12 h-12 text-dark-text-secondary mx-auto mb-3" />
+          <p className="text-dark-text-secondary">
             Your watch history will appear here
           </p>
         </div>
@@ -105,7 +105,7 @@ const ContinueWatching: React.FC<ContinueWatchingProps> = ({
             return (
               <div
                 key={`${item.mediaType}-${item.id}`}
-                className="group flex gap-4 bg-light-bg dark:bg-dark-bg border border-border-light dark:border-border-dark hover:border-accent transition-colors relative"
+                className="group flex gap-4 bg-dark-bg border-border-dark hover:border-accent transition-colors relative"
               >
                 {/* Remove button - Absolute positioned */}
                 <button
@@ -134,7 +134,7 @@ const ContinueWatching: React.FC<ContinueWatchingProps> = ({
                 <div className="flex-1 min-w-0 py-3 pr-4">
                   <div className="min-w-0">
                     <h3 className="font-medium truncate">{item.title}</h3>
-                    <div className="flex items-center gap-2 text-sm text-light-text-secondary dark:text-dark-text-secondary mt-1">
+                    <div className="flex items-center gap-2 text-sm text-dark-text-secondary mt-1">
                       <span className="capitalize">{item.mediaType}</span>
                       {item.season !== undefined && (
                         <span>• S{item.season}:E{item.episode}</span>
@@ -144,20 +144,20 @@ const ContinueWatching: React.FC<ContinueWatchingProps> = ({
 
                   <div className="mt-2">
                     <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-light-text-secondary dark:text-dark-text-secondary">
+                      <span className="text-dark-text-secondary">
                         {formatDate(item.lastWatched)}
                       </span>
                       {progress && (
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1 text-xs text-light-text-secondary dark:text-dark-text-secondary">
+                          <div className="flex items-center gap-1 text-xs text-dark-text-secondary">
                             <Timer className="w-3 h-3" />
                             <span>{progress.watched}</span>
                           </div>
                           <div className={cn(
                             "px-1.5 py-0.5 text-xs rounded-md",
-                            progress.isAccurateTracking 
-                              ? "bg-red-600/10 text-red-600 dark:bg-red-500/20 dark:text-red-400"
-                              : "bg-light-surface dark:bg-dark-surface text-light-text-secondary dark:text-dark-text-secondary"
+                            progress.isAccurateTracking
+                              ? "bg-red-500/20 text-red-400"
+                              : "bg-dark-surface text-dark-text-secondary"
                           )}>
                             {progress.remaining} left
                           </div>
@@ -165,14 +165,14 @@ const ContinueWatching: React.FC<ContinueWatchingProps> = ({
                       )}
                     </div>
                     {progress && (
-                      <div className="relative h-1.5 bg-light-surface dark:bg-dark-surface rounded-full overflow-hidden">
-                        <div className="absolute inset-0 bg-border-light dark:bg-border-dark opacity-50" />
+                      <div className="relative h-1.5 bg-dark-surface rounded-full overflow-hidden">
+                        <div className="absolute inset-0 bg-border-dark opacity-50" />
                         <div
                           className={cn(
                             "absolute inset-y-0 left-0 transition-all duration-300",
-                            progress.isAccurateTracking 
+                            progress.isAccurateTracking
                               ? "bg-gradient-to-r from-red-500 to-red-600"
-                              : "bg-gradient-to-r from-light-text-secondary to-light-text-secondary dark:from-dark-text-secondary dark:to-dark-text-secondary"
+                              : "bg-gradient-to-r from-dark-text-secondary to-dark-text-secondary"
                           )}
                           style={{ width: `${Math.min(progress.percentage, 100)}%` }}
                         />

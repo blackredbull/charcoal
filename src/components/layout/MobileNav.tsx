@@ -40,7 +40,7 @@ const MobileNav = () => {
       {/* Search Box Popup */}
       <div
         className={cn(
-          "fixed left-4 right-4 bottom-24 bg-light-bg dark:bg-dark-bg rounded-lg shadow-lg z-50 transition-all duration-200",
+          "fixed left-4 right-4 bottom-24 bg-dark-bg rounded-lg shadow-lg z-50 transition-all duration-200",
           isSearchOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"
         )}
       >
@@ -51,13 +51,13 @@ const MobileNav = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search movies, TV shows..."
-              className="w-full pl-4 pr-12 py-3 bg-light-surface dark:bg-dark-surface rounded-lg outline-none text-light-text dark:text-dark-text"
+              className="w-full pl-4 pr-12 py-3 bg-dark-surface rounded-lg outline-none text-dark-text"
               autoFocus
             />
             <button
               type="button"
               onClick={() => setIsSearchOpen(false)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-light-surface dark:hover:bg-dark-surface rounded-full"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-dark-surface rounded-full"
             >
               <X className="w-5 h-5" />
             </button>
@@ -66,13 +66,13 @@ const MobileNav = () => {
       </div>
 
       {/* Floating Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-light-bg dark:bg-dark-bg border-t-2 border-gray-400/50 dark:border-white/20">
+      <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-dark-bg border-t-2 border-white/20">
         <div className="relative grid grid-cols-5 h-16">
           <Link
             to="/"
             className={cn(
               'flex flex-col items-center justify-center gap-0.5',
-              location.pathname === '/' ? 'text-red-600' : 'text-light-text-secondary dark:text-dark-text-secondary'
+              location.pathname === '/' ? 'text-red-600' : 'text-dark-text-secondary'
             )}
           >
             <Grid className="w-6 h-6" />
@@ -93,7 +93,7 @@ const MobileNav = () => {
           {/* Search Button */}
           <button
             onClick={handleSearchClick}
-            className="flex flex-col items-center justify-center gap-0.5 text-light-text-secondary dark:text-dark-text-secondary"
+            className="flex flex-col items-center justify-center gap-0.5 text-dark-text-secondary"
           >
             <div className="w-12 h-12 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center shadow-md border-2 border-gray-400/50 dark:border-white/20 -mt-6">
               <Search className="w-6 h-6 text-white" />

@@ -89,14 +89,14 @@ const YouMightLike: React.FC<YouMightLikeProps> = ({ items }) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-light-bg dark:bg-dark-bg border border-border-light dark:border-border-dark rounded-lg overflow-hidden">
-      <div className="p-3 border-b border-border-light dark:border-border-dark flex items-center justify-between">
+    <div className="h-full flex flex-col bg-dark-bg border-border-dark rounded-lg overflow-hidden">
+      <div className="p-3 border-b border-border-dark flex items-center justify-between">
         <h2 className="text-xl font-semibold">You Might Like</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={() => scroll('left')}
             className={cn(
-              "w-8 h-8 flex items-center justify-center hover:bg-light-surface dark:hover:bg-dark-surface rounded-full transition-colors border border-border-light dark:border-border-dark",
+              "w-8 h-8 flex items-center justify-center hover:bg-dark-surface rounded-full transition-colors border-border-dark",
               !canScrollLeft && "opacity-50 cursor-not-allowed"
             )}
             disabled={!canScrollLeft}
@@ -155,7 +155,7 @@ const YouMightLike: React.FC<YouMightLikeProps> = ({ items }) => {
                 >
                   <Link
                     to={`/${isMovie ? 'movie' : 'tv'}/${item.id}`}
-                    className="relative border border-border-light dark:border-border-dark rounded-lg overflow-hidden hover:border-red-500/50 transition-all duration-200 block"
+                    className="relative border-border-dark rounded-lg overflow-hidden hover:border-red-500/50 transition-all duration-200 block"
                   >
                     <div className="aspect-video relative">
                       <img
