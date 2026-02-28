@@ -178,7 +178,7 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
                   </div>
                 </div>
 
-                {/* Type Tag – matched to Watching / Watched style */}
+                {/* Type Tag */}
                 <div className="absolute bottom-2 left-2">
                   <div
                     className={cn(
@@ -197,13 +197,13 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
                   {video.name}
                 </h4>
                 <div className="flex items-center justify-between text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">
-                  <span>{video.site}</span>
-                  <div className="flex items-center gap-2">
-                    {video.official && (
-                      <span className="text-green-400">Official</span>
-                    )}
+                  <div className="flex items-center gap-1.5">
+                    <span>{video.site}</span>
                     <ExternalLink className="w-3.5 h-3.5 text-white/70" />
                   </div>
+                  {video.official && (
+                    <span className="text-green-400">Official</span>
+                  )}
                 </div>
               </div>
             </motion.a>
