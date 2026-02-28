@@ -193,7 +193,7 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
               {/* Overview – fixed height + ellipsis, now 3 lines instead of 4 */}
               <div className="mb-8 max-w-2xl mx-auto lg:mx-0">
                 <p
-                  className="text-sm md:text-base text-white/70 leading-relaxed text-left line-clamp-3"
+                  className="text-sm md:text-base text-white/70 leading-relaxed text-left line-clamp-4"
                 >
                   {overview}
                 </p>
