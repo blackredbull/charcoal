@@ -448,18 +448,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       {/* Top Header */}
       {showControls && (
         <div className="absolute top-0 left-0 right-0 p-4 md:p-8 flex items-start justify-between z-40 bg-gradient-to-b from-black/90 via-black/40 to-transparent pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center gap-3 p-1.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
+          <div className="flex items-center gap-2 md:gap-3 p-1.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md min-w-0 max-w-[70%] sm:max-w-none">
             {onBack && (
               <button
                 onClick={onBack}
-                className="p-2.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all active:scale-95 group"
+                className="flex items-center justify-center p-2 md:p-2.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all active:scale-95 group"
                 title="Back"
               >
-                <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+                <ArrowLeft className="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform" />
               </button>
             )}
 
-            <div className="h-8 w-[1px] bg-white/10 mx-1" />
+            <div className="h-6 md:h-8 w-[1px] bg-white/10 mx-0.5 md:mx-1" />
 
             {showTitle && (
               <button
@@ -472,25 +472,25 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   }
                 }}
                 className={cn(
-                  "flex flex-col text-left px-4 py-2 rounded-xl transition-all group/title",
+                  "flex flex-col text-left px-2 md:px-4 py-1.5 md:py-2 rounded-xl transition-all group/title min-w-0",
                   !isMovie && seasons ? "hover:bg-white/10 cursor-pointer" : "cursor-default"
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <h1 className="text-white text-base md:text-lg font-bold tracking-tight group-hover/title:text-accent transition-colors">
+                <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                  <h1 className="text-white text-sm md:text-lg font-bold tracking-tight transition-colors truncate">
                     {showTitle}
                   </h1>
                   {!isMovie && seasons && (
                     <div className={cn(
-                      "p-1 rounded-md transition-all",
+                      "p-1 rounded-md transition-all flex-shrink-0",
                       showEpisodeSelector ? "bg-accent/20 text-accent" : "bg-white/10 text-white/40 group-hover/title:bg-accent/20 group-hover/title:text-accent"
                     )}>
-                      <List className="w-3.5 h-3.5" />
+                      <List className="w-3 h-3 md:w-3.5 md:h-3.5" />
                     </div>
                   )}
                 </div>
                 {!isMovie && seasonNumber && episodeNumber && (
-                  <p className="text-white/40 text-[10px] md:text-xs font-bold uppercase tracking-wider mt-0.5">
+                  <p className="text-white/40 text-[9px] md:text-xs font-bold uppercase tracking-wider mt-0.5 truncate">
                     S{seasonNumber} • E{episodeNumber} {episodeTitle && <span className="text-white/20 ml-1">· {episodeTitle}</span>}
                   </p>
                 )}
@@ -516,21 +516,21 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       {/* Modern Landscape Episode Selector */}
       {!isMovie && showEpisodeSelector && seasons && (
         <div className="absolute inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center animate-in fade-in zoom-in duration-300" onClick={(e) => { e.stopPropagation(); setShowEpisodeSelector(false); }}>
-          <div className="w-full max-w-6xl h-[85vh] bg-white/5 border border-white/10 rounded-3xl overflow-hidden flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.5)]" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-6 md:p-8 border-b border-white/10 bg-white/5">
+          <div className="w-full max-w-6xl h-[90vh] md:h-[85vh] bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl overflow-hidden flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.5)]" onClick={(e) => e.stopPropagation()}>
+            <div className="flex flex-col md:flex-row md:items-center justify-between p-4 md:p-8 border-b border-white/10 bg-white/5 gap-4">
               <div className="flex items-center gap-4">
-                <List className="w-6 h-6 text-accent" />
-                <h2 className="text-white font-bold text-2xl tracking-tight">Episodes</h2>
+                <List className="w-5 h-5 md:w-6 md:h-6 text-accent" />
+                <h2 className="text-white font-bold text-lg md:text-2xl tracking-tight">Episodes</h2>
               </div>
-              
-              <div className="flex items-center gap-4">
+
+              <div className="flex items-center gap-3 md:gap-4 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
                 <div className="flex bg-white/5 p-1 rounded-xl border border-white/5">
                    {seasons.map((season) => (
                     <button
                       key={season.season_number}
                       onClick={() => setSelectedSeason(season.season_number)}
                       className={cn(
-                        "px-4 py-2 rounded-lg font-bold text-sm transition-all whitespace-nowrap",
+                        "px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-bold text-xs md:text-sm transition-all whitespace-nowrap",
                         selectedSeason === season.season_number
                           ? "bg-accent text-white shadow-lg shadow-accent/20"
                           : "text-white/40 hover:text-white/80"
@@ -542,15 +542,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 </div>
                 <button
                   onClick={() => setShowEpisodeSelector(false)}
-                  className="p-3 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-all active:scale-95 border border-white/5 hover:border-white/10"
+                  className="p-2 md:p-3 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-all active:scale-95 border border-white/5 hover:border-white/10"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5 md:w-6 md:h-6" />
                 </button>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+              <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {currentSeasonData?.episodes.map((episode: any) => {
                   const airDate = episode.air_date ? new Date(episode.air_date) : null;
                   const isUpcoming = airDate ? airDate > new Date() : false;
@@ -610,16 +610,23 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                           </div>
                         )}
 
+                        <div className="absolute bottom-2 left-2">
+                          {episode.runtime && (
+                            <div className="px-2 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                              {episode.runtime}m
+                            </div>
+                          )}
+                        </div>
+
                         <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
-                          {isCompleted && (
+                          {isCompleted ? (
                             <div className="px-2 py-1 bg-green-500/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
                               <Eye className="w-3 h-3" />
                               Watched
                             </div>
-                          )}
-                          {episode.runtime && (
-                            <div className="px-2 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                              {episode.runtime}m
+                          ) : historyItem?.progress && (
+                            <div className="px-2 py-1 bg-accent/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                              {Math.max(1, Math.floor((historyItem.progress.duration - historyItem.progress.watched) / 60))}m left
                             </div>
                           )}
                         </div>
@@ -697,12 +704,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         {/* Progress Bar Container */}
         <div
           ref={progressBarRef}
-          className="w-full mb-6 group/progress relative pointer-events-auto cursor-pointer py-4"
+          className="w-full mb-4 md:mb-6 group/progress relative pointer-events-auto cursor-pointer py-2 md:py-4"
           onClick={handleProgressBarClick}
           onMouseDown={(e) => e.stopPropagation()}
         >
           {/* Progress Track */}
-          <div className="relative h-1.5 md:h-2 bg-white/10 rounded-full overflow-hidden transition-all group-hover/progress:h-3">
+          <div className="relative h-1 md:h-2 bg-white/10 rounded-full overflow-hidden transition-all group-hover/progress:h-2 md:group-hover/progress:h-3">
             <div
               className="absolute top-0 left-0 h-full bg-accent transition-all duration-100"
               style={{ width: `${progress}%` }}
@@ -710,53 +717,53 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
           {/* Progress Thumb */}
           <div
-            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-all transform -translate-x-1/2 opacity-0 group-hover/progress:opacity-100 scale-50 group-hover/progress:scale-100"
+            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 md:w-5 md:h-5 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-all transform -translate-x-1/2 opacity-0 group-hover/progress:opacity-100 scale-50 group-hover/progress:scale-100"
             style={{ left: `${progress}%` }}
           />
         </div>
 
         {/* Controls Row */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center justify-between md:justify-start gap-4 md:gap-8">
-            <div className="flex items-center gap-3 md:gap-5">
+        <div className="flex flex-row items-center justify-between gap-2 md:gap-6 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-2 md:gap-8">
+            <div className="flex items-center gap-1 md:gap-5">
               <button
                 onClick={(e) => skip(-10, e)}
-                className="text-white/70 hover:text-white transition-all p-3 rounded-xl hover:bg-white/10 active:scale-95"
+                className="text-white/70 hover:text-white transition-all p-2 md:p-3 rounded-xl hover:bg-white/10 active:scale-95"
                 title="Rewind 10s"
               >
-                <RotateCcw className="w-7 h-7" />
+                <RotateCcw className="w-5 h-5 md:w-7 md:h-7" />
               </button>
 
               <button
                 onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-                className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center bg-white text-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10"
+                className="w-10 h-10 md:w-16 md:h-16 flex items-center justify-center bg-white text-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10"
                 title={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? (
-                  <Pause className="w-7 h-7 md:w-8 md:h-8 fill-current" />
+                  <Pause className="w-5 h-5 md:w-8 md:h-8 fill-current" />
                 ) : (
-                  <Play className="w-7 h-7 md:w-8 md:h-8 fill-current ml-1" />
+                  <Play className="w-5 h-5 md:w-8 md:h-8 fill-current ml-0.5 md:ml-1" />
                 )}
               </button>
 
               <button
                 onClick={(e) => skip(10, e)}
-                className="text-white/70 hover:text-white transition-all p-3 rounded-xl hover:bg-white/10 active:scale-95"
+                className="text-white/70 hover:text-white transition-all p-2 md:p-3 rounded-xl hover:bg-white/10 active:scale-95"
                 title="Forward 10s"
               >
-                <RotateCw className="w-7 h-7" />
+                <RotateCw className="w-5 h-5 md:w-7 md:h-7" />
               </button>
             </div>
 
-            <div className="flex items-center gap-4 text-white/90 font-bold tabular-nums text-sm md:text-lg">
+            <div className="flex items-center gap-2 md:gap-4 text-white/90 font-bold tabular-nums text-xs md:text-lg">
               <span className="opacity-100">{formatTime(videoRef.current?.currentTime || 0)}</span>
               <span className="text-white/20">/</span>
               <span className="text-white/50">{formatTime(duration)}</span>
             </div>
           </div>
 
-          <div className="flex items-center justify-between md:justify-end gap-3 md:gap-5">
-             <div className="flex items-center gap-2 group/volume">
+          <div className="flex items-center gap-1.5 md:gap-5">
+             <div className="hidden sm:flex items-center gap-2 group/volume">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -780,7 +787,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
+            <div className="flex items-center gap-1 md:gap-2 p-1 md:p-1.5 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl backdrop-blur-md">
               <div className="relative">
                 <button
                   onClick={(e) => {
@@ -789,11 +796,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     setShowSubtitles(false);
                   }}
                   className={cn(
-                    "px-4 py-2.5 rounded-xl transition-all flex items-center gap-2.5 active:scale-95",
+                    "px-2 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl transition-all flex items-center gap-2 active:scale-95",
                     showQuality ? "bg-accent text-white" : "text-white/70 hover:text-white hover:bg-white/5"
                   )}
                 >
-                  <Settings2 className="w-5 h-5" />
+                  <Settings2 className="w-4 h-4 md:w-5 md:h-5" />
                   <span className="hidden sm:inline font-bold text-sm">{currentSource && formatQuality(currentSource.quality)}</span>
                 </button>
                 {showQuality && (
@@ -818,11 +825,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     setShowQuality(false);
                   }}
                   className={cn(
-                    "px-4 py-2.5 rounded-xl transition-all flex items-center gap-2.5 active:scale-95",
+                    "px-2 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl transition-all flex items-center gap-2 active:scale-95",
                     showSubtitles ? "bg-accent text-white" : "text-white/70 hover:text-white hover:bg-white/5"
                   )}
                 >
-                  <Subtitles className="w-5 h-5" />
+                  <Subtitles className="w-4 h-4 md:w-5 md:h-5" />
                   <span className="hidden sm:inline font-bold text-sm">Captions</span>
                 </button>
                 {showSubtitles && (
@@ -841,9 +848,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
               <button
                 onClick={(e) => toggleFullscreen(e)}
-                className="p-2.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all active:scale-95"
+                className="p-2 md:p-2.5 text-white/70 hover:text-white hover:bg-white/10 rounded-lg md:rounded-xl transition-all active:scale-95"
               >
-                <Maximize className="w-5 h-5" />
+                <Maximize className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             </div>
           </div>
