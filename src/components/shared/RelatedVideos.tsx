@@ -189,13 +189,6 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
                     {video.type}
                   </div>
                 </div>
-
-                {/* External Link Indicator */}
-                <div className="absolute top-2 right-2">
-                  <div className="p-1.5 bg-white/10 backdrop-blur-md text-white rounded-lg border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </div>
-                </div>
               </div>
 
               {/* Info Area */}
@@ -205,9 +198,12 @@ const RelatedVideos: React.FC<RelatedVideosProps> = ({ videos }) => {
                 </h4>
                 <div className="flex items-center justify-between text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">
                   <span>{video.site}</span>
-                  {video.official && (
-                    <span className="text-green-400">Official</span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {video.official && (
+                      <span className="text-green-400">Official</span>
+                    )}
+                    <ExternalLink className="w-3.5 h-3.5 text-white/70" />
+                  </div>
                 </div>
               </div>
             </motion.a>
