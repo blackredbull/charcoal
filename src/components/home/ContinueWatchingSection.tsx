@@ -209,16 +209,13 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
                   {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
                   
-                  {/* Top Badges (TV Info) - single line, no wrap */}
+                  {/* Top Badges (TV Info) */}
                   {item.mediaType === 'tv' && item.season && item.episode && (
-                    <div className="absolute top-3 left-3 max-w-[75%] overflow-hidden">
-                      <div className="px-3 py-1.5 bg-black/65 backdrop-blur-md text-white rounded-lg text-sm font-bold uppercase tracking-wide border border-white/20 shadow-lg inline-flex items-center gap-2.5 whitespace-nowrap overflow-hidden">
-                        <span className="flex items-center gap-2.5">
-                          <span>{formatSeasonEpisode(item.season, item.episode)}</span>
-                          <span className="text-base font-black text-white/90">·</span> {/* bigger/bolder dot */}
-                        </span>
+                    <div className="absolute top-3 left-3 max-w-[80%]">
+                      <div className="px-3 py-1.5 bg-black/60 backdrop-blur-md text-white rounded-lg text-xs font-black uppercase tracking-wider border border-white/20 shadow-lg inline-flex items-center gap-2">
+                        <span>{formatSeasonEpisode(item.season, item.episode)}</span>
                         {episodeDetails?.name && (
-                          <span className="text-white/85 font-medium tracking-normal truncate">
+                          <span className="text-white/80 font-medium tracking-normal truncate max-w-[180px]">
                             {episodeDetails.name}
                           </span>
                         )}
