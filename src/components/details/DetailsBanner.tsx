@@ -110,19 +110,19 @@ const DetailsBanner: React.FC<DetailsBannerProps> = ({
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
             >
-              {/* Type tag – redesigned */}
+              {/* Type tag redesigned */}
               <div className="flex justify-center lg:justify-start items-center gap-3 mb-5">
-                <div className="relative inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-accent/90 to-accent/70 backdrop-blur-lg text-white rounded-full text-sm font-bold uppercase tracking-wider shadow-lg shadow-accent/30 border border-accent/40">
+                <div className="relative inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-accent/90 to-accent/70 backdrop-blur-lg text-white rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-lg shadow-accent/30 border border-accent/40">
                   {type === 'movie' ? (
-                    <Film className="w-4 h-4" />
+                    <Film className="w-3.5 h-3.5" />
                   ) : (
-                    <Tv className="w-4 h-4" />
+                    <Tv className="w-3.5 h-3.5" />
                   )}
                   {type === 'movie' ? 'Movie' : 'TV Series'}
                   <div className="absolute -inset-1 bg-accent/20 rounded-full blur-md -z-10" />
                 </div>
                 {contentRating && (
-                  <span className="px-3 py-1.5 bg-white/10 backdrop-blur-md text-white/80 text-xs font-bold rounded-full border border-white/10 uppercase">
+                  <span className="px-3 py-1.5 bg-white/10 backdrop-blur-md text-white/80 text-[10px] md:text-xs font-bold rounded-full border border-white/10 uppercase">
                     {contentRating}
                   </span>
                 )}
