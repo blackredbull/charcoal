@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Star, Flame, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, Flame, Sparkles, Film, Tv } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Movie, TVShow } from '../../api/types';
 import { getImageUrl } from '../../api/config';
@@ -206,21 +206,19 @@ const YouMightLike: React.FC<YouMightLikeProps> = ({ items }) => {
                 </Link>
 
                 {/* Info Area */}
-                <div className="px-1 pb-1">
+                <div className="px-1 pb-1 flex items-center justify-between gap-3 min-w-0">
                   <Link
                     to={getMediaUrl(item)}
-                    className="font-bold text-base md:text-lg leading-tight text-white line-clamp-1 hover:text-accent transition-colors mb-1"
+                    className="font-bold text-base md:text-lg leading-tight text-white truncate hover:text-accent transition-colors"
                   >
                     {itemTitle}
                   </Link>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">
-                      {'title' in item ? 'Movie' : 'TV Series'}
-                    </span>
-                    <div className="w-1 h-1 rounded-full bg-white/20" />
-                    <span className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">
-                      Featured
-                    </span>
+                  <div className="flex-shrink-0 p-1.5 bg-white/5 rounded-lg border border-white/10">
+                    {'title' in item ? (
+                      <Film className="w-3.5 h-3.5 text-white/60" />
+                    ) : (
+                      <Tv className="w-3.5 h-3.5 text-white/60" />
+                    )}
                   </div>
                 </div>
               </motion.div>

@@ -94,16 +94,6 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
     containerRef.current.scrollLeft = scrollLeft - walk;
   };
 
-  const formatDuration = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    if (minutes >= 60) {
-      const hours = Math.floor(minutes / 60);
-      const remainingMinutes = minutes % 60;
-      return `${hours}h ${remainingMinutes}m`;
-    }
-    return `${minutes}m`;
-  };
-
   const formatSeasonEpisode = (season: number, episode: number) => {
     return `S${season} • E${episode}`;
   };
@@ -176,6 +166,7 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
             const remaining = item.progress
               ? item.progress.duration - item.progress.watched
               : 0;
+            const durationMinutes = item.progress ? Math.floor(item.progress.duration / 60) : 0;
 
             return (
               <motion.div
@@ -203,29 +194,29 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
                       'w780'
                     )}
                     alt={item.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover"
                   />
                   
                   {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
                   
-                  {/* Badges */}
-                  <div className="absolute top-3 left-3 flex flex-col gap-2">
-                    <div className="px-2.5 py-1 bg-black/50 backdrop-blur-md text-white rounded-lg text-[10px] font-black uppercase tracking-wider border border-white/10 shadow-lg flex items-center gap-1.5">
-                      {item.mediaType === 'movie' ? <Film className="w-3 h-3" /> : <Tv className="w-3 h-3" />}
-                      {item.mediaType === 'movie' ? 'Movie' : 'TV Series'}
-                    </div>
+                  {/* Bottom Badges */}
+                  <div className="absolute bottom-3 left-3">
+                    {durationMinutes > 0 && (
+                      <div className="px-2 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10 shadow-lg">
+                        {durationMinutes}m
+                      </div>
+                    )}
                   </div>
 
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute bottom-3 right-3 flex items-center gap-1.5">
                     {item.isCompleted ? (
-                      <div className="px-2.5 py-1 bg-green-500/80 backdrop-blur-md text-white rounded-lg text-[10px] font-black uppercase tracking-wider border border-white/10 shadow-lg flex items-center gap-1.5">
+                      <div className="px-2 py-1 bg-green-500/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10 shadow-lg flex items-center gap-1">
                         <Eye className="w-3 h-3" />
                         Watched
                       </div>
                     ) : remaining > 0 && (
-                      <div className="px-2.5 py-1 bg-accent/80 backdrop-blur-md text-white rounded-lg text-[10px] font-black uppercase tracking-wider border border-white/10 shadow-lg flex items-center gap-1.5">
-                        <Clock className="w-3 h-3" />
+                      <div className="px-2 py-1 bg-accent/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10 shadow-lg">
                         {Math.max(1, Math.floor(remaining / 60))}m left
                       </div>
                     )}
@@ -253,19 +244,34 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
 
                 {/* Info Area */}
                 <div className="px-1 pb-1">
-                  <h3 className="font-bold text-base md:text-lg leading-tight text-white line-clamp-1 mb-1">
-                    {item.title}
-                  </h3>
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <h3 className="font-bold text-base md:text-lg leading-tight text-white truncate">
+                        {item.title}
+                      </h3>
                       {item.mediaType === 'tv' && item.season && item.episode && (
-                        <span className="text-[10px] text-white/40 font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
-                          {formatSeasonEpisode(item.season, item.episode)}
-                        </span>
+                        <>
+                          <span className="text-white/20 font-bold">•</span>
+                          <span className="text-[10px] text-white/40 font-black uppercase tracking-widest whitespace-nowrap">
+                            {formatSeasonEpisode(item.season, item.episode)}
+                          </span>
+                        </>
                       )}
-                      <span className="text-[10px] text-white/40 font-black uppercase tracking-widest">
-                        {item.mediaType === 'tv' && episodeDetails?.name ? episodeDetails.name : 'Recently Played'}
-                      </span>
+                      {item.mediaType === 'tv' && episodeDetails?.name && (
+                        <>
+                          <span className="text-white/20 font-bold">•</span>
+                          <span className="text-[10px] text-white/40 font-black uppercase tracking-widest truncate">
+                            {episodeDetails.name}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex-shrink-0 p-1.5 bg-white/5 rounded-lg border border-white/10">
+                      {item.mediaType === 'movie' ? (
+                        <Film className="w-3.5 h-3.5 text-white/60" />
+                      ) : (
+                        <Tv className="w-3.5 h-3.5 text-white/60" />
+                      )}
                     </div>
                   </div>
                 </div>

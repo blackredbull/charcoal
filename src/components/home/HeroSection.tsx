@@ -128,7 +128,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items }) => {
             scale: { duration: 0.8, ease: "easeOut" },
             filter: { duration: 0.6 }
           }}
-          className="absolute inset-0"
+          className="absolute inset-0 cursor-pointer"
+          onClick={() => navigate(`/${mediaType}/${currentItem.id}`)}
         >
           {/* Background Image */}
           <div className="absolute inset-0">
@@ -241,15 +242,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items }) => {
                   className="px-8 py-3.5 bg-accent hover:bg-accent/90 text-white rounded-2xl flex items-center gap-3 transition-all shadow-xl shadow-accent/20 active:scale-95 group/play border border-white/20"
                 >
                   <Play className="w-5 h-5 fill-current ml-0.5 group-hover:scale-110 transition-transform" />
-                  <span className="font-bold text-base uppercase tracking-wider">Play Now</span>
-                </Link>
-
-                <Link
-                  to={`/${mediaType}/${currentItem.id}`}
-                  className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl flex items-center gap-3 transition-all backdrop-blur-md active:scale-95 border border-white/10"
-                >
-                  <Info className="w-5 h-5" />
-                  <span className="font-bold text-base uppercase tracking-wider">Details</span>
+                  <span className="font-bold text-base uppercase tracking-wider">PLAY</span>
                 </Link>
 
                 <div className="relative">
