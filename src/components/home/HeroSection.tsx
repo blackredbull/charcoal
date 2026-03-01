@@ -28,30 +28,32 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items }) => {
     queryFn: genreService.getAllGenres,
   });
 
-  const currentItem = items[currentIndex];
+  const currentItem = items && items.length > 0 ? items[currentIndex] : null;
   const isMovie = currentItem && 'title' in currentItem;
   const mediaType = isMovie ? 'movie' : 'tv';
 
   const { data: contentRating } = useMedia.useContentRating(
     mediaType,
-    currentItem?.id
+    currentItem?.id || 0
   );
 
   const { data: images } = useQuery({
     queryKey: ['images', currentItem?.id],
-    queryFn: () => mediaService.getImages(mediaType, currentItem.id),
+    queryFn: () => currentItem ? mediaService.getImages(mediaType, currentItem.id) : null,
     enabled: !!currentItem
   });
 
   useEffect(() => {
+    if (!items || items.length === 0) return;
     const interval = setInterval(() => {
       paginate(1);
     }, 8000);
 
     return () => clearInterval(interval);
-  }, [currentIndex]);
+  }, [currentIndex, items]);
 
   const paginate = (newDirection: number) => {
+    if (!items || items.length === 0) return;
     setDirection(newDirection);
     setCurrentIndex((prev) => {
       if (newDirection === 1) {
@@ -61,7 +63,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items }) => {
     });
   };
 
-  if (!items.length) return null;
+  if (!items || items.length === 0 || !currentItem) return null;
 
   const title = isMovie ? currentItem.title : currentItem.name;
   const releaseDate = isMovie ? currentItem.release_date : currentItem.first_air_date;
@@ -69,6 +71,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items }) => {
   const watchlistItem = getWatchlistItem(currentItem.id, mediaType);
 
   const handleWatchlistAdd = (status: WatchStatus) => {
+    if (!currentItem) return;
     addToWatchlist({
       id: currentItem.id,
       mediaType,
@@ -81,6 +84,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items }) => {
   };
 
   const handleWatchlistRemove = () => {
+    if (!currentItem) return;
     removeFromWatchlist(currentItem.id, mediaType);
     setIsWatchlistOpen(false);
   };
@@ -89,7 +93,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items }) => {
     return genreIds.map(id => genres.find(g => g.id === id)?.name).filter(Boolean);
   };
 
-  const logo = images?.logos?.find(logo =>
+  const logo = images?.logos?.find((logo: any) =>
     logo.iso_639_1 === 'en' || !logo.iso_639_1
   );
 
