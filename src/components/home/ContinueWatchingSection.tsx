@@ -95,7 +95,16 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
   };
 
   const formatSeasonEpisode = (season: number, episode: number) => {
-    return `${season} · ${episode}`;
+    return `S${season} · E${episode}`;
+  };
+
+  const formatTime = (minutes: number): string => {
+    if (minutes < 60) {
+      return `${minutes}m`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return remainingMinutes === 0 ? `${hours}h` : `${hours}h ${remainingMinutes}m`;
   };
 
   if (items.length === 0) return null;
@@ -163,8 +172,8 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
             const progress = item.progress
               ? (item.progress.watched / item.progress.duration) * 100
               : 0;
-            const remaining = item.progress
-              ? item.progress.duration - item.progress.watched
+            const remainingMinutes = item.progress
+              ? Math.floor((item.progress.duration - item.progress.watched) / 60)
               : 0;
             const durationMinutes = item.progress ? Math.floor(item.progress.duration / 60) : 0;
 
@@ -202,13 +211,11 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
                   
                   {/* Top Badges (TV Info) */}
                   {item.mediaType === 'tv' && item.season && item.episode && (
-                    <div className="absolute top-3 left-3 flex flex-col gap-2 max-w-[80%]">
-                      <div className="flex items-center gap-2 overflow-hidden">
-                        <span className="px-2.5 py-1 bg-black/50 backdrop-blur-md text-white rounded-lg text-[10px] font-black uppercase tracking-wider border border-white/10 shadow-lg whitespace-nowrap">
-                          {formatSeasonEpisode(item.season, item.episode)}
-                        </span>
+                    <div className="absolute top-3 left-3 max-w-[80%]">
+                      <div className="px-3 py-1.5 bg-black/60 backdrop-blur-md text-white rounded-lg text-xs font-black uppercase tracking-wider border border-white/20 shadow-lg inline-flex items-center gap-2">
+                        <span>{formatSeasonEpisode(item.season, item.episode)}</span>
                         {episodeDetails?.name && (
-                          <span className="text-[10px] text-white font-black uppercase tracking-widest truncate drop-shadow-lg">
+                          <span className="text-white/80 font-medium tracking-normal truncate max-w-[180px]">
                             {episodeDetails.name}
                           </span>
                         )}
@@ -217,23 +224,23 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
                   )}
 
                   {/* Bottom Badges */}
-                  <div className="absolute bottom-3 left-3">
+                  <div className="absolute bottom-3 left-3 flex gap-2">
                     {durationMinutes > 0 && (
-                      <div className="px-2 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10 shadow-lg">
-                        {durationMinutes}m
+                      <div className="px-2.5 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-xs font-bold uppercase tracking-wider border border-white/10 shadow-lg">
+                        {formatTime(durationMinutes)}
                       </div>
                     )}
                   </div>
 
                   <div className="absolute bottom-3 right-3 flex items-center gap-1.5">
                     {item.isCompleted ? (
-                      <div className="px-2 py-1 bg-green-500/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10 shadow-lg flex items-center gap-1">
-                        <Eye className="w-3 h-3" />
+                      <div className="px-2.5 py-1 bg-green-500/80 backdrop-blur-md text-white rounded-lg text-xs font-bold uppercase tracking-wider border border-white/10 shadow-lg flex items-center gap-1">
+                        <Eye className="w-3.5 h-3.5" />
                         Watched
                       </div>
-                    ) : remaining > 0 && (
-                      <div className="px-2 py-1 bg-accent/80 backdrop-blur-md text-white rounded-lg text-[10px] font-bold uppercase tracking-wider border border-white/10 shadow-lg">
-                        {Math.max(1, Math.floor(remaining / 60))}m left
+                    ) : remainingMinutes > 0 && (
+                      <div className="px-2.5 py-1 bg-accent/80 backdrop-blur-md text-white rounded-lg text-xs font-bold uppercase tracking-wider border border-white/10 shadow-lg">
+                        {formatTime(remainingMinutes)} left
                       </div>
                     )}
                   </div>
