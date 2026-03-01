@@ -3,7 +3,7 @@ import { mediaService } from '../services/media';
 import { MediaType, TimeWindow } from '../types';
 
 export const useMedia = {
-  useTrending: (mediaType?: MediaType, timeWindow?: TimeWindow) =>
+  useTrending: (mediaType?: MediaType, timeWindow?: TimeWindow) => 
     useQuery({
       queryKey: ['trending', mediaType, timeWindow],
       queryFn: () => mediaService.getTrending(mediaType, timeWindow),
