@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PlayCircle, Film, Tv, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Film, Tv, ChevronLeft, ChevronRight, History, Eye, Clock } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
 import { mediaService } from '../../api/services/media';
 import { getImageUrl } from '../../api/config';
 import { cn } from '../../lib/utils';
@@ -13,8 +14,11 @@ interface ContinueWatchingSectionProps {
 
 const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const episodeQueries = useQuery({
     queryKey: ['episodes', items.map(item => `${item.id}-${item.season}-${item.episode}`)],
@@ -25,6 +29,7 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
           .map(item =>
             mediaService.getTVSeasonDetails(item.id, item.season!)
               .then(season => season.episodes.find(ep => ep.episode_number === item.episode))
+              .catch(() => null)
           )
       );
       return episodeDetails;
@@ -32,37 +37,61 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
     enabled: items.some(item => item.mediaType === 'tv'),
   });
 
-  const checkScrollPosition = () => {
-    if (!containerRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
-    setCanScrollLeft(scrollLeft > 0);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-  };
-
   useEffect(() => {
+    const checkScroll = () => {
+      if (!containerRef.current) return;
+     
+      setShowLeftArrow(containerRef.current.scrollLeft > 0);
+      setShowRightArrow(
+        containerRef.current.scrollLeft <
+        containerRef.current.scrollWidth - containerRef.current.clientWidth - 10
+      );
+    };
+
     const container = containerRef.current;
     if (container) {
-      container.addEventListener('scroll', checkScrollPosition);
-      checkScrollPosition();
+      container.addEventListener('scroll', checkScroll, { passive: true });
+      checkScroll();
     }
+
     return () => {
       if (container) {
-        container.removeEventListener('scroll', checkScrollPosition);
+        container.removeEventListener('scroll', checkScroll);
       }
     };
   }, [items]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (!containerRef.current) return;
+   
     const scrollAmount = containerRef.current.clientWidth * 0.8;
     const newScrollLeft = direction === 'left'
       ? containerRef.current.scrollLeft - scrollAmount
       : containerRef.current.scrollLeft + scrollAmount;
-
+   
     containerRef.current.scrollTo({
       left: newScrollLeft,
       behavior: 'smooth'
     });
+  };
+
+  const startDrag = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setStartX(e.pageX - (containerRef.current?.offsetLeft || 0));
+    setScrollLeft(containerRef.current?.scrollLeft || 0);
+  };
+
+  const stopDrag = () => {
+    setIsDragging(false);
+  };
+
+  const onDrag = (e: React.MouseEvent) => {
+    if (!isDragging || !containerRef.current) return;
+    e.preventDefault();
+   
+    const x = e.pageX - (containerRef.current.offsetLeft || 0);
+    const walk = (x - startX) * 2;
+    containerRef.current.scrollLeft = scrollLeft - walk;
   };
 
   const formatDuration = (seconds: number) => {
@@ -76,134 +105,184 @@ const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = ({ items
   };
 
   const formatSeasonEpisode = (season: number, episode: number) => {
-    return `S${season.toString().padStart(2, '0')}E${episode.toString().padStart(2, '0')}`;
+    return `S${season} • E${episode}`;
   };
 
   if (items.length === 0) return null;
 
   return (
-    <div className="h-full flex flex-col bg-dark-bg border-2 border-white/20 rounded-2xl overflow-hidden">
-      <div className="p-3 border-b border-border-dark flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Continue Watching</h2>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => scroll('left')}
-            className={cn(
-              "w-8 h-8 flex items-center justify-center hover:bg-dark-surface rounded-full transition-colors border-border-dark",
-              !canScrollLeft && "opacity-50 cursor-not-allowed"
-            )}
-            disabled={!canScrollLeft}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => scroll('right')}
-            className={cn(
-              "w-8 h-8 flex items-center justify-center hover:bg-light-surface dark:hover:bg-dark-surface rounded-full transition-colors border border-border-light dark:border-border-dark",
-              !canScrollRight && "opacity-50 cursor-not-allowed"
-            )}
-            disabled={!canScrollRight}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      <div className="flex-1 p-3">
-        <div 
-          ref={containerRef}
-          className="overflow-x-auto scrollbar-thin"
-          style={{ scrollPaddingRight: '1rem' }}
-        >
-          <div className="flex gap-3">
-            {items.map((item, index) => {
-              const episodeDetails = item.mediaType === 'tv' ? episodeQueries.data?.[index] : null;
-              const progress = item.progress
-                ? Math.round((item.progress.watched / item.progress.duration) * 100)
-                : 0;
-              const remaining = item.progress
-                ? item.progress.duration - item.progress.watched
-                : 0;
-
-              return (
-                <Link
-                  key={`${item.mediaType}-${item.id}`}
-                  to={`/watch/${item.mediaType}/${item.id}${
-                    item.mediaType === 'tv' ? `?season=${item.season}&episode=${item.episode}` : ''
-                  }`}
-                  className="flex-shrink-0 w-[75vw] sm:w-[400px] lg:w-[450px] relative"
-                >
-                  <div className="relative border-border-dark rounded-lg overflow-hidden hover:border-red-500/50 transition-all duration-200 group">
-                    <div className="aspect-video relative">
-                      <img
-                        src={getImageUrl(
-                          item.mediaType === 'tv' && episodeDetails?.still_path
-                            ? episodeDetails.still_path
-                            : item.posterPath,
-                          'w780'
-                        )}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-
-                      <div className="absolute inset-0 p-3 flex flex-col justify-end">
-                        <div className="flex items-center gap-2 mb-1">
-                          {item.mediaType === 'movie' ? (
-                            <Film className="w-3.5 h-3.5 text-white" />
-                          ) : (
-                            <Tv className="w-3.5 h-3.5 text-white" />
-                          )}
-                        </div>
-
-                        <h3 className="text-white font-medium text-base sm:text-lg mb-1 line-clamp-1">
-                          {item.title}
-                        </h3>
-
-                        {item.mediaType === 'tv' && item.season && item.episode && episodeDetails && (
-                          <span className="text-white/80 text-xs sm:text-sm mb-1.5 line-clamp-1">
-                            {formatSeasonEpisode(item.season, item.episode)} • {episodeDetails.name}
-                          </span>
-                        )}
-
-                        <div className="flex items-center gap-2 mb-1.5 text-xs">
-                          {item.progress && (
-                            <div className="flex items-center gap-2 text-white/80 w-full">
-                              <div className="px-1.5 py-0.5 bg-red-600 text-white text-[10px] rounded">
-                                {formatDuration(remaining)} left
-                              </div>
-                              <div className="ml-auto text-[10px] text-white/60">
-                                {formatDuration(item.progress.duration)}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Progress bar */}
-                        <div>
-                          <div className="h-1 bg-white/20 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-red-600"
-                              style={{ width: `${progress}%` }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Play button overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-600/90 flex items-center justify-center">
-                          <PlayCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white fill-white" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+    <div className="relative group/container py-4">
+      {/* Section Header */}
+      <div className="flex items-center justify-between mb-8 px-2">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-accent/10 rounded-xl border border-accent/20">
+            <History className="w-6 h-6 text-accent" />
+          </div>
+          <div>
+            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Continue Watching</h2>
+            <p className="text-white/40 text-xs font-bold uppercase tracking-widest mt-0.5">Pick up where you left off</p>
           </div>
         </div>
       </div>
+
+      {/* Navigation Arrows with glassy style */}
+      <AnimatePresence>
+        {showLeftArrow && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => scroll('left')}
+            className="absolute left-4 top-[60%] z-20 -translate-y-1/2 w-14 h-14 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full flex items-center justify-center transition-all hover:bg-accent/40 hover:border-accent/60 hover:scale-110 shadow-2xl"
+          >
+            <ChevronLeft className="w-7 h-7" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showRightArrow && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => scroll('right')}
+            className="absolute right-4 top-[60%] z-20 -translate-y-1/2 w-14 h-14 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full flex items-center justify-center transition-all hover:bg-accent/40 hover:border-accent/60 hover:scale-110 shadow-2xl"
+          >
+            <ChevronRight className="w-7 h-7" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+     
+      {/* Scrollable Container */}
+      <div
+        ref={containerRef}
+        className="overflow-x-auto scrollbar-none px-2 py-4"
+        onMouseDown={startDrag}
+        onMouseUp={stopDrag}
+        onMouseLeave={stopDrag}
+        onMouseMove={onDrag}
+        onTouchStart={(e) => startDrag(e as unknown as React.MouseEvent)}
+        onTouchEnd={stopDrag}
+        onTouchMove={(e) => onDrag(e as unknown as React.MouseEvent)}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'pan-y' }}
+      >
+        <div className="flex gap-6">
+          {items.map((item, index) => {
+            const episodeDetails = item.mediaType === 'tv' ? episodeQueries.data?.[index] : null;
+            const progress = item.progress
+              ? (item.progress.watched / item.progress.duration) * 100
+              : 0;
+            const remaining = item.progress
+              ? item.progress.duration - item.progress.watched
+              : 0;
+
+            return (
+              <motion.div
+                key={`${item.mediaType}-${item.id}`}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className={cn(
+                  "group flex-shrink-0 w-[300px] md:w-[340px] flex flex-col gap-4 rounded-3xl transition-all text-left border relative overflow-hidden p-3",
+                  "bg-white/[0.03] border-white/5 hover:bg-white/[0.08] hover:border-white/10"
+                )}
+              >
+                {/* Poster Card */}
+                <Link
+                  to={`/watch/${item.mediaType}/${item.id}${
+                    item.mediaType === 'tv' ? `?season=${item.season}&episode=${item.episode}` : ''
+                  }`}
+                  className="relative w-full aspect-video rounded-2xl overflow-hidden flex-shrink-0 shadow-xl cursor-pointer"
+                >
+                  <img
+                    src={getImageUrl(
+                      item.mediaType === 'tv' && episodeDetails?.still_path
+                        ? episodeDetails.still_path
+                        : item.posterPath,
+                      'w780'
+                    )}
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  {/* Badges */}
+                  <div className="absolute top-3 left-3 flex flex-col gap-2">
+                    <div className="px-2.5 py-1 bg-black/50 backdrop-blur-md text-white rounded-lg text-[10px] font-black uppercase tracking-wider border border-white/10 shadow-lg flex items-center gap-1.5">
+                      {item.mediaType === 'movie' ? <Film className="w-3 h-3" /> : <Tv className="w-3 h-3" />}
+                      {item.mediaType === 'movie' ? 'Movie' : 'TV Series'}
+                    </div>
+                  </div>
+
+                  <div className="absolute top-3 right-3">
+                    {item.isCompleted ? (
+                      <div className="px-2.5 py-1 bg-green-500/80 backdrop-blur-md text-white rounded-lg text-[10px] font-black uppercase tracking-wider border border-white/10 shadow-lg flex items-center gap-1.5">
+                        <Eye className="w-3 h-3" />
+                        Watched
+                      </div>
+                    ) : remaining > 0 && (
+                      <div className="px-2.5 py-1 bg-accent/80 backdrop-blur-md text-white rounded-lg text-[10px] font-black uppercase tracking-wider border border-white/10 shadow-lg flex items-center gap-1.5">
+                        <Clock className="w-3 h-3" />
+                        {Math.max(1, Math.floor(remaining / 60))}m left
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100">
+                    <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center shadow-2xl border-2 border-white/20">
+                      <Play className="w-8 h-8 text-white fill-current ml-1" />
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-white/20">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress}%` }}
+                      transition={{ duration: 1, delay: 0.2 }}
+                      className="h-full bg-accent relative"
+                    >
+                      <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                    </motion.div>
+                  </div>
+                </Link>
+
+                {/* Info Area */}
+                <div className="px-1 pb-1">
+                  <h3 className="font-bold text-base md:text-lg leading-tight text-white line-clamp-1 mb-1">
+                    {item.title}
+                  </h3>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      {item.mediaType === 'tv' && item.season && item.episode && (
+                        <span className="text-[10px] text-white/40 font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
+                          {formatSeasonEpisode(item.season, item.episode)}
+                        </span>
+                      )}
+                      <span className="text-[10px] text-white/40 font-black uppercase tracking-widest">
+                        {item.mediaType === 'tv' && episodeDetails?.name ? episodeDetails.name : 'Recently Played'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+
+      <style>{`
+        .scrollbar-none {
+          scrollbar-width: none;
+        }
+        .scrollbar-none::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };
