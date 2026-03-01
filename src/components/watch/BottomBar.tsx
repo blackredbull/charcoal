@@ -78,8 +78,8 @@ const BottomBar: React.FC<BottomBarProps> = ({
         </div>
 
         {/* Center Section: Navigation */}
-        <div className="flex justify-center min-w-0">
-          <div className="flex items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md w-full max-w-[600px] min-w-0">
+        <div className="flex justify-center items-center min-w-0">
+          <div className="flex items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md min-w-0 max-w-[600px]">
             {!isMovie && (
               <button
                 onClick={onPrevious}
@@ -94,7 +94,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
               ref={episodeButtonRef}
               onClick={() => setIsEpisodeMenuOpen(!isEpisodeMenuOpen)}
               className={cn(
-                "flex flex-col text-left px-3 md:px-5 py-1.5 md:py-2 rounded-xl transition-all group/title min-w-0 flex-1 hover:bg-white/10",
+                "flex flex-col text-left px-3 md:px-5 py-1.5 md:py-2 rounded-xl transition-all group/title min-w-0 hover:bg-white/10",
                 isEpisodeMenuOpen && "bg-accent/20"
               )}
             >
@@ -144,7 +144,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
               >
                 <MonitorPlay className="w-5 h-5" />
                 <span className="hidden lg:inline font-bold text-sm">
-                  {useCustomPlayer ? "Embed Mode" : "Jelly Server"}
+                  {useCustomPlayer ? "Embed Mode" : "Jelly"}
                 </span>
               </button>
             )}
@@ -180,22 +180,20 @@ const BottomBar: React.FC<BottomBarProps> = ({
 
       {/* Episode Selector Modal */}
       {isEpisodeMenuOpen && !isMovie && (
-        <div className="fixed inset-0 z-[100] pointer-events-auto">
-          <EpisodeSelector
-            isOpen={isEpisodeMenuOpen}
-            onClose={() => setIsEpisodeMenuOpen(false)}
-            seasons={seasons || []}
-            seasonNumber={Number(currentSeason)}
-            episodeNumber={Number(currentEpisode)}
-            id={tvId}
-            onEpisodeSelect={onEpisodeSelect}
-            onEpisodeNext={onNext}
-            onEpisodePrevious={onPrevious}
-            isFirstEpisode={isFirstEpisode}
-            isLastEpisode={isLastEpisode}
-            showTitle={showTitle}
-          />
-        </div>
+        <EpisodeSelector
+          isOpen={isEpisodeMenuOpen}
+          onClose={() => setIsEpisodeMenuOpen(false)}
+          seasons={seasons || []}
+          seasonNumber={Number(currentSeason)}
+          episodeNumber={Number(currentEpisode)}
+          id={tvId}
+          onEpisodeSelect={onEpisodeSelect}
+          onEpisodeNext={onNext}
+          onEpisodePrevious={onPrevious}
+          isFirstEpisode={isFirstEpisode}
+          isLastEpisode={isLastEpisode}
+          showTitle={showTitle}
+        />
       )}
     </>
   );
